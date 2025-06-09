@@ -1,0 +1,107 @@
+{
+  "contracts": [
+    {
+      "id": 21,
+      "title": "GI Diagnostics Endoscopy Woodstock UHC",
+      "description": "Colonoscopy Flexible with Removal od Tumor(s), Polyps(s) or other lessions",
+      "payer_name": "NGA",
+      "state": "Florida",
+      "effective_date": "2025-05-12T19:34:36.954087Z",
+      "uploaded_at": "2025-05-12T19:34:36.953194Z",
+      "file": "http://127.0.0.1:8000/media/contracts/GI_Diagnostics_Endoscopy_Woodstock_UHC.xlsx_-_PayerPrice_Pull.pdf"
+    }
+  ],
+  "cpt_codes": [
+    {
+      "cpt_code": "J0702",
+      "volume": 93,
+      "contract_rate": 6.96,
+      "offer_rate": 6.96,
+      "category_description": "INJECTABLES/OTHER DRUGS",
+      "baseline_id": "3be8a7d738635a09a9c302258e3b48ee",
+      "facility": "Non Facility",
+      "description": "Betamethasone acet&sod phosp",
+      "top_codes": "",
+      "carve_out": "NaN",
+      "dme": "E",
+      "status_indicator": "",
+      "modifier": "",
+      "sheet_name": "Medicare - MD"
+    },
+    {
+      "cpt_code": "99213",
+      "volume": 54,
+      "contract_rate": 84.67,
+      "offer_rate": 79.48,
+      "category_description": "EVALUATION & MANAGEMENT",
+      "baseline_id": "3be8a7d738635a09a9c302258e3b48ee",
+      "facility": "Non Facility",
+      "description": "Office o/p est low 20 min",
+      "top_codes": "",
+      "carve_out": "NaN",
+      "dme": "A",
+      "status_indicator": "",
+      "modifier": "",
+      "sheet_name": "Medicare - MD"
+    },
+    {
+      "cpt_code": "99214",
+      "volume": 29,
+      "contract_rate": 120.08,
+      "offer_rate": 112.45,
+      "category_description": "EVALUATION & MANAGEMENT",
+      "baseline_id": "3be8a7d738635a09a9c302258e3b48ee",
+      "facility": "Non Facility",
+      "description": "Office o/p est mod 30 min",
+      "top_codes": "",
+      "carve_out": "NaN",
+      "dme": "A",
+      "status_indicator": "",
+      "modifier": "",
+      "sheet_name": "Medicare - MD"
+    },
+    {
+      "cpt_code": "20610",
+      "volume": 24,
+      "contract_rate": 60.16,
+      "offer_rate": 55.93,
+      "category_description": "SURGERY - MUSCULOSKELETAL",
+      "baseline_id": "3be8a7d738635a09a9c302258e3b48ee",
+      "facility": "Non Facility",
+      "description": "Drain/inj joint/bursa w/o us",
+      "top_codes": "",
+      "carve_out": "NaN",
+      "dme": "A",
+      "status_indicator": "",
+      "modifier": "",
+      "sheet_name": "Medicare - MD"
+    },
+    {
+      "cpt_code": "73564",
+      "volume": 18,
+      "contract_rate": 46.76,
+      "offer_rate": 39.75,
+      "category_description": "RADIOLOGY",
+      "baseline_id": "3be8a7d738635a09a9c302258e3b48ee",
+      "facility": "Non Facility",
+      "description": "X-ray exam knee 4 or more",
+      "top_codes": "",
+      "carve_out": "NaN",
+      "dme": "A",
+      "status_indicator": "",
+      "modifier": "",
+      "sheet_name": "Medicare - MD"
+    }
+  ],
+  "upload": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    },
+    {
+      "id": 3
+    }
+  ]
+}
