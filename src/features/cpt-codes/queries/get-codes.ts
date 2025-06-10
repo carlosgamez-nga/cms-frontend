@@ -1,10 +1,10 @@
-import { CodeContract } from '@/features/types';
-import { cptCodes } from '../../../../cpt-codes';
+import { CodeContract } from '@/app/dashboard/types';
 
-export const getCodes = async (): Promise<CodeContract[]> => {
+export const getCptCodes = async (): Promise<CodeContract[]> => {
+  // testing only
   await new Promise((res) => setTimeout(res, 2000));
 
-  return new Promise((res) => {
-    res(cptCodes);
-  });
+  const res = await fetch(`${process.env.BACKEND_URL}/cpt_codes/`);
+
+  return res.json();
 };

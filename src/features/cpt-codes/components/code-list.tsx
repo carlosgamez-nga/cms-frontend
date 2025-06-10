@@ -1,6 +1,5 @@
 import { Badge } from '@/components/ui/badge';
-import { CodeCPT } from '@/features/types';
-
+import { CodeCPT } from '@/app/dashboard/types';
 type CodesProps = {
   codes: CodeCPT[];
 };
@@ -11,7 +10,7 @@ const CodeList = ({ codes }: CodesProps) => {
       <div className='flex justify-start gap-1 lg:gap-2 items-center flex-wrap'>
         <span className='text-sm font-bold'>CPT Codes:</span>
         {codes.map((code) => (
-          <Badge key={code.code} variant='secondary'>
+          <Badge key={code.code} variant='secondary' className='bg-primary/10'>
             {code.code}
           </Badge>
         ))}

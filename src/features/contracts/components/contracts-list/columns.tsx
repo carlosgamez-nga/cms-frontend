@@ -1,7 +1,7 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { ArrowUpDown, ChevronRight, MoreHorizontal } from 'lucide-react';
+import { ArrowUpDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
@@ -80,7 +80,7 @@ export const columns: ColumnDef<Contract>[] = [
     cell: ({ row }) => {
       const { id } = row.original;
       return (
-        <Button asChild variant='secondary' size='sm'>
+        <Button asChild variant='link' size='sm'>
           <Link href={`/dashboard/contracts/${id}`}>Show contract</Link>
         </Button>
       );

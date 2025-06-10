@@ -3,7 +3,7 @@ import { FileText } from 'lucide-react';
 import CustomIcon from '@/components/custom-icon';
 import DataTable from '@/features/contracts/components/contracts-list/data-table';
 
-import { getContracts } from '../../../../features/contracts/queries/get-contracts';
+import { getContracts } from '@/features/contracts/queries/get-contracts';
 import { columns } from '@/features/contracts/components/contracts-list/columns';
 
 const LastContracts = async () => {

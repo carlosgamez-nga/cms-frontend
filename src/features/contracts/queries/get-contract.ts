@@ -10,7 +10,5 @@ export const getContract = async (
     (contract) => contract.id === parseInt(contractId)
   );
 
-  console.log(contracts, contractId, contract);
-
   return new Promise((res) => res(contract || null));
 };
