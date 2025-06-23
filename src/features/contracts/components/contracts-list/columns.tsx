@@ -24,24 +24,20 @@ export const columns: ColumnDef<Contract>[] = [
     cell: ({ row }) => <div className='lowercase'>{row.getValue('title')}</div>,
   },
   {
-    accessorKey: 'description',
-    header: 'Description',
-    cell: ({ row }) => (
-      <div className=' capitalize'>{row.getValue('description')}</div>
-    ),
-  },
-  {
-    accessorKey: 'state',
-    header: 'State',
-    cell: ({ row }) => (
-      <div className=' capitalize'>{row.getValue('state')}</div>
-    ),
-  },
-  {
     accessorKey: 'payer_name',
-    header: 'Payer name',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Payer name
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </Button>
+      );
+    },
     cell: ({ row }) => (
-      <div className=' capitalize'>{row.getValue('payer_name')}</div>
+      <div className='text-center capitalize'>{row.getValue('payer_name')}</div>
     ),
   },
   {
@@ -58,8 +54,20 @@ export const columns: ColumnDef<Contract>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className=' lowercase'>{row.getValue('effective_date')}</div>
+      <div className='lowercase'>{row.getValue('effective_date')}</div>
     ),
+  },
+  {
+    accessorKey: 'link',
+    header: 'Link',
+    cell: ({ row }) => {
+      const { id } = row.original;
+      return (
+        <Button asChild variant='link' size='sm'>
+          <Link href={`/dashboard/contracts/${id}`}>Show contract...</Link>
+        </Button>
+      );
+    },
   },
   // {
   //   accessorKey: 'amount',
@@ -74,16 +82,16 @@ export const columns: ColumnDef<Contract>[] = [
   //     return <div className='text-right font-medium'>{formatted}</div>;
   //   },
   // },
-  {
-    id: 'actions',
-    header: 'Actions',
-    cell: ({ row }) => {
-      const { id } = row.original;
-      return (
-        <Button asChild variant='link' size='sm'>
-          <Link href={`/dashboard/contracts/${id}`}>Show contract</Link>
-        </Button>
-      );
-    },
-  },
+  // {
+  //   id: 'actions',
+  //   header: 'Actions',
+  //   cell: ({ row }) => {
+  //     const { id } = row.original;
+  //     return (
+  //       <Button asChild variant='link' size='sm'>
+  //         <Link href={`/dashboard/contracts/${id}`}>Show contract</Link>
+  //       </Button>
+  //     );
+  //   },
+  // },
 ];

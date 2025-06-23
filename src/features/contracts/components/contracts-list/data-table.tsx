@@ -11,9 +11,9 @@ import {
   getSortedRowModel,
   SortingState,
   useReactTable,
-  VisibilityState,
 } from '@tanstack/react-table';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Table,
   TableBody,
@@ -24,13 +24,6 @@ import {
 } from '@/components/ui/table';
 
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { ChevronDown } from 'lucide-react';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -75,42 +68,22 @@ const DataTable = <TData, TValue>({
   }
 
   return (
-    <div className='p-4 bg-background shadow-md rounded-lg mt-4 w-full'>
+    <div className='p-4 bg-background shadow-md rounded-lg mt-4 md:w-full lg:w-8/12 lg:m-auto'>
       <div className='flex items-center py-4'>
+        <Label
+          htmlFor='search'
+          className='min-w-[80px] text-sm font-medium mr-2'
+        >
+          Search
+        </Label>
         <Input
+          id='search'
           placeholder='Search contract by title...'
           value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
           onChange={(e) =>
             table.getColumn('title')?.setFilterValue(e.target.value)
           }
-          className='max-w-sm'
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant='outline' className='ml-auto'>
-              Show columns <ChevronDown />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className='capitalize'
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
       <div className='rounded-md'>
         <div className='rounded-md border overflow-x-auto w-full'>
