@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 // import { PiArrowsDownUp } from 'react-icons/pi';
-import CPTCodesInfo from './cpt-codes-info';
+import CPTCodesInfo from '../../../features/cpt-codes/components/cpt-codes-info';
 
 const ChartCard = () => {
   return (

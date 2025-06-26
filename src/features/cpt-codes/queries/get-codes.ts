@@ -1,6 +1,6 @@
-import { CodeContract } from '@/app/dashboard/types';
+import { CodeCPT } from '@/lib/types';
 
-export const getCptCodes = async (): Promise<CodeContract[]> => {
+export const getCptCodes = async (): Promise<CodeCPT[]> => {
   // testing only
   await new Promise((res) => setTimeout(res, 2000));
 

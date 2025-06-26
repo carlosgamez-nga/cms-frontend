@@ -149,7 +149,7 @@ export default function ContractUpload({ title }: ContractUploadProps) {
 
   return (
     <>
-      <div className='flex justify-between items-center mx-8 lg:w-8/12 lg:m-auto'>
+      <div className='flex justify-between items-center mx-8 lg:w-[1024px] lg:mx-auto'>
         <h5>{title}</h5>
 
         <Dialog open={open} onOpenChange={setOpen}>

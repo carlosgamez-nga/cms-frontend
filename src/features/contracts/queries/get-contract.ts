@@ -1,4 +1,4 @@
-import { Contract } from '../../../app/dashboard/types';
+import { Contract } from '@/lib/types';
 import { getContracts } from './get-contracts';
 
 export const getContract = async (

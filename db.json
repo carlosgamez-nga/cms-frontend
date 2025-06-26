@@ -1,32 +1,48 @@
 {
   "contracts": [
     {
-      "id": 21,
-      "title": "GI Diagnostics Endoscopy Woodstock UHC",
-      "description": "Colonoscopy Flexible with Removal od Tumor(s), Polyps(s) or other lessions",
-      "payer_name": "NGA",
-      "state": "Florida",
-      "effective_date": "2025-05-12T19:34:36.954087Z",
-      "uploaded_at": "2025-05-12T19:34:36.953194Z",
-      "file": "http://127.0.0.1:8000/media/contracts/GI_Diagnostics_Endoscopy_Woodstock_UHC.xlsx_-_PayerPrice_Pull.pdf"
+      "id": 22,
+      "title": "Digestive Health UHC Georgia",
+      "description": "Upper GI procedures with sedation",
+      "payer_name": "UHC",
+      "state": "Georgia",
+      "effective_date": "2025-06-25T14:00:00Z",
+      "uploaded_at": "2025-06-25T14:00:00Z",
+      "file": "http://127.0.0.1:8000/media/contracts/Digestive_Health_UHC_Georgia.pdf"
     }
   ],
   "cpt_codes": [
     {
-      "cpt_code": "J0702",
-      "volume": 93,
-      "contract_rate": 6.96,
-      "offer_rate": 6.96,
-      "category_description": "INJECTABLES/OTHER DRUGS",
-      "baseline_id": "3be8a7d738635a09a9c302258e3b48ee",
-      "facility": "Non Facility",
-      "description": "Betamethasone acet&sod phosp",
+      "cpt_code": "91000",
+      "volume": 87,
+      "contract_rate": 102.34,
+      "offer_rate": 98.5,
+      "category_description": "DIAGNOSTIC GASTROENTEROLOGY",
+      "baseline_id": "a6d2b6d793cb4f469f1dc3694e549d8e",
+      "facility": "Facility",
+      "description": "Esophageal motility study",
       "top_codes": "",
       "carve_out": "NaN",
       "dme": "E",
       "status_indicator": "",
       "modifier": "",
-      "sheet_name": "Medicare - MD"
+      "sheet_name": "Commercial - MD"
+    },
+    {
+      "cpt_code": "91001",
+      "volume": 65,
+      "contract_rate": 96.75,
+      "offer_rate": 92.3,
+      "category_description": "DIAGNOSTIC GASTROENTEROLOGY",
+      "baseline_id": "546841e85c4a42a498c3cf92343fbb94",
+      "facility": "Facility",
+      "description": "Esophageal motility w/ stim",
+      "top_codes": "",
+      "carve_out": "NaN",
+      "dme": "E",
+      "status_indicator": "",
+      "modifier": "",
+      "sheet_name": "Commercial - MD"
     },
     {
       "cpt_code": "99213",
@@ -35,14 +51,14 @@
       "offer_rate": 79.48,
       "category_description": "EVALUATION & MANAGEMENT",
       "baseline_id": "3be8a7d738635a09a9c302258e3b48ee",
-      "facility": "Non Facility",
+      "facility": "Facility",
       "description": "Office o/p est low 20 min",
       "top_codes": "",
       "carve_out": "NaN",
       "dme": "A",
       "status_indicator": "",
       "modifier": "",
-      "sheet_name": "Medicare - MD"
+      "sheet_name": "Commercial - MD"
     },
     {
       "cpt_code": "99214",
@@ -51,14 +67,14 @@
       "offer_rate": 112.45,
       "category_description": "EVALUATION & MANAGEMENT",
       "baseline_id": "3be8a7d738635a09a9c302258e3b48ee",
-      "facility": "Non Facility",
+      "facility": "Facility",
       "description": "Office o/p est mod 30 min",
       "top_codes": "",
       "carve_out": "NaN",
       "dme": "A",
       "status_indicator": "",
       "modifier": "",
-      "sheet_name": "Medicare - MD"
+      "sheet_name": "Commercial - MD"
     },
     {
       "cpt_code": "20610",
@@ -67,41 +83,117 @@
       "offer_rate": 55.93,
       "category_description": "SURGERY - MUSCULOSKELETAL",
       "baseline_id": "3be8a7d738635a09a9c302258e3b48ee",
-      "facility": "Non Facility",
+      "facility": "Facility",
       "description": "Drain/inj joint/bursa w/o us",
       "top_codes": "",
       "carve_out": "NaN",
       "dme": "A",
       "status_indicator": "",
       "modifier": "",
-      "sheet_name": "Medicare - MD"
-    },
-    {
-      "cpt_code": "73564",
-      "volume": 18,
-      "contract_rate": 46.76,
-      "offer_rate": 39.75,
-      "category_description": "RADIOLOGY",
-      "baseline_id": "3be8a7d738635a09a9c302258e3b48ee",
-      "facility": "Non Facility",
-      "description": "X-ray exam knee 4 or more",
-      "top_codes": "",
-      "carve_out": "NaN",
-      "dme": "A",
-      "status_indicator": "",
-      "modifier": "",
-      "sheet_name": "Medicare - MD"
+      "sheet_name": "Commercial - MD"
     }
   ],
-  "upload": [
-    {
-      "id": 1
-    },
-    {
-      "id": 2
-    },
-    {
-      "id": 3
-    }
-  ]
+  "current_contract_data": {
+    "payer": "UHC",
+    "facility_type": "facility",
+    "state": "GA",
+    "county": "Fulton",
+    "reimbursement_class": "MD",
+    "line_of_business": "Commercial",
+    "year": "2025",
+    "cpt_prices": [
+      { "cpt_code": "91000", "price": 99.1 },
+      { "cpt_code": "91001", "price": 86.5 },
+      { "cpt_code": "99213", "price": 80.0 },
+      { "cpt_code": "99214", "price": 110.0 },
+      { "cpt_code": "20610", "price": 57.0 }
+    ]
+  },
+  "cms_data": {
+    "payer": "CMS",
+    "facility_type": "facility",
+    "state": "GA",
+    "county": "Fulton",
+    "locality_code": "12345",
+    "carrier_code": "67890",
+    "year": "2025",
+    "cpt_prices": [
+      { "cpt_code": "91000", "price": 87.4 },
+      { "cpt_code": "91001", "price": 80.1 },
+      { "cpt_code": "99213", "price": 78.0 },
+      { "cpt_code": "99214", "price": 105.0 },
+      { "cpt_code": "20610", "price": 53.5 }
+    ]
+  },
+  "payer_price_data": {
+    "payer": "UHC",
+    "facility_type": "facility",
+    "state": "GA",
+    "county": "Fulton",
+    "year": "2025",
+    "cpt_prices": [
+      {
+        "cpt_code": "91000",
+        "median_price": 99.1,
+        "percentile_rate_25": 89.5,
+        "percentile_rate_50": 95.0,
+        "percentile_rate_75": 103.75,
+        "percentile_rate_90": 110.0,
+        "percentile_rate_95": 115.25
+      },
+      {
+        "cpt_code": "91001",
+        "median_price": 86.5,
+        "percentile_rate_25": 78.25,
+        "percentile_rate_50": 83.0,
+        "percentile_rate_75": 91.5,
+        "percentile_rate_90": 98.0,
+        "percentile_rate_95": 103.0
+      },
+      {
+        "cpt_code": "99213",
+        "median_price": 82.5,
+        "percentile_rate_25": 75.0,
+        "percentile_rate_50": 80.0,
+        "percentile_rate_75": 88.0,
+        "percentile_rate_90": 95.0,
+        "percentile_rate_95": 100.0
+      },
+      {
+        "cpt_code": "99214",
+        "median_price": 115.0,
+        "percentile_rate_25": 100.0,
+        "percentile_rate_50": 110.0,
+        "percentile_rate_75": 120.0,
+        "percentile_rate_90": 130.0,
+        "percentile_rate_95": 135.0
+      },
+      {
+        "cpt_code": "20610",
+        "median_price": 59.0,
+        "percentile_rate_25": 50.0,
+        "percentile_rate_50": 56.0,
+        "percentile_rate_75": 62.0,
+        "percentile_rate_90": 68.0,
+        "percentile_rate_95": 72.0
+      }
+    ]
+  },
+  "new_contract_data": {
+    "payer": "UHC",
+    "facility_type": "facility",
+    "state": "GA",
+    "county": "Fulton",
+    "reimbursement_class": "MD",
+    "line_of_business": "Commercial",
+    "year": "2025",
+    "cpt_prices": [
+      { "cpt_code": "91000", "price": 101.25 },
+      { "cpt_code": "91001", "price": 89.75 },
+      { "cpt_code": "99213", "price": 83.25 },
+      { "cpt_code": "99214", "price": 117.0 },
+      { "cpt_code": "20610", "price": 60.0 }
+    ]
+  },
+  "upload": []
 }

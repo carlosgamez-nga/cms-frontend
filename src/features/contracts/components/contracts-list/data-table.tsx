@@ -68,7 +68,7 @@ const DataTable = <TData, TValue>({
   }
 
   return (
-    <div className='p-4 bg-background shadow-md rounded-lg mt-4 md:w-full lg:w-8/12 lg:m-auto'>
+    <div className='p-4 border bg-background shadow-sm rounded-lg mt-4 md:w-full lg:max-w-[1024px] lg:mx-auto '>
       <div className='flex items-center py-4'>
         <Label
           htmlFor='search'
@@ -128,10 +128,7 @@ const DataTable = <TData, TValue>({
                 ))
               ) : (
                 <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className='h-24 text-center'
-                  >
+                  <TableCell colSpan={columns.length} className='h-24'>
                     No results.
                   </TableCell>
                 </TableRow>

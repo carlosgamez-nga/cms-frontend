@@ -11,7 +11,7 @@ const ContractsPage = () => {
     <div className='flex-1 flex flex-col gap-y-4'>
       <Heading
         title='Your contracts'
-        description='All your contracts in one place'
+        description='Browse all your contracts in one place. Use the table to sort and search through your contracts for easy tracking and management.'
       />
 
       <Toaster />

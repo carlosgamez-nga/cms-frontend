@@ -5,7 +5,7 @@ import { ArrowUpDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
-import { Contract } from '@/app/dashboard/types';
+import { Contract } from '@/lib/types';
 
 export const columns: ColumnDef<Contract>[] = [
   {
@@ -37,7 +37,7 @@ export const columns: ColumnDef<Contract>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className='text-center capitalize'>{row.getValue('payer_name')}</div>
+      <div className='capitalize'>{row.getValue('payer_name')}</div>
     ),
   },
   {

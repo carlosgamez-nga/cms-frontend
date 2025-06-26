@@ -4,10 +4,14 @@ import { notFound } from 'next/navigation';
 // import Spinner from '@/components/spinner';
 // import ChartCard from '@/components/chart-card';
 import CodeList from '@/features/cpt-codes/components/code-list';
-import CodeBarChart from '@/features/cpt-codes/components/code-bar-chart';
-import CodePieChart from '@/features/cpt-codes/components/code-pie-chart';
-import { CodeCPT } from '../../types';
+
+import { CodeCPT } from '@/lib/types';
+
 import { getContract } from '@/features/contracts/queries/get-contract';
+import { getCptCodes } from '@/features/cpt-codes/queries/get-codes';
+import CMSDataChart from '@/features/charts/components/cms-data-chart';
+import PayerPriceDataChart from '@/features/charts/components/payer-price-data-chart';
+import NewContractDataChart from '@/features/charts/components/new-contract-data-chart';
 
 type ContractProps = {
   params: {
@@ -16,47 +20,11 @@ type ContractProps = {
   codes: CodeCPT[];
 };
 
-const codes_data = [
-  {
-    code: '43200',
-    current_rate: 515,
-    current_percentage: 102.31,
-    offer_rate: 600,
-    offer_percentage: 119.19,
-  },
-  {
-    code: '45380',
-    current_rate: 515,
-    current_percentage: 81.36,
-    offer_rate: 600,
-    offer_percentage: 94.79,
-  },
-  {
-    code: '43239',
-    current_rate: 515,
-    current_percentage: 102.31,
-    offer_rate: 600,
-    offer_percentage: 119.19,
-  },
-  {
-    code: '45378',
-    current_rate: 515,
-    current_percentage: 105.22,
-    offer_rate: 600,
-    offer_percentage: 122.58,
-  },
-  {
-    code: '43450',
-    current_rate: 515,
-    current_percentage: 102.31,
-    offer_rate: 600,
-    offer_percentage: 119.19,
-  },
-];
-
 const ContractPage = async ({ params }: ContractProps) => {
-  const { contractId } = params;
+  const { contractId } = await params;
   const contract = await getContract(contractId);
+
+  const codes_data = await getCptCodes();
 
   if (!contract) {
     notFound();
@@ -68,9 +36,16 @@ const ContractPage = async ({ params }: ContractProps) => {
         <h2 className='text-3xl font-bold'>{contract.title}</h2>
       </div>
       <CodeList codes={codes_data} />
-      <div className='grid gap-6 md:grid-cols-2'>
-        <CodeBarChart codes={codes_data} />
-        <CodePieChart codes={codes_data} />
+      <div className='grid gap-6 grid-cols-6 grid-row-2'>
+        <div className='col-span-6 lg:col-span-2'>
+          <CMSDataChart />
+        </div>
+        <div className='col-span-6 lg:col-span-2'>
+          <PayerPriceDataChart />
+        </div>
+        <div className='col-span-6 lg:col-span-2'>
+          <NewContractDataChart />
+        </div>
       </div>
     </div>
 

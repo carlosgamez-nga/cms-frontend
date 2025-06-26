@@ -1,4 +1,4 @@
-import { Contract } from '../../../app/dashboard/types';
+import { Contract } from '../../../lib/types';
 
 export const getContracts = async (): Promise<Contract[]> => {
   // testing only

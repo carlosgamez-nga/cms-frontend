@@ -9,7 +9,7 @@ const ContractsRevenue = () => {
         <CustomIcon icon={BarChart} />
         <p className='text-xl'>Contracts Revenue</p>
       </div>
-      <ChartContractsRevenue />
+      {/* <ChartContractsRevenue /> */}
     </div>
   );
 };
