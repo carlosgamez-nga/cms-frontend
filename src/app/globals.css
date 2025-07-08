@@ -136,3 +136,17 @@ body,
 :root {
   height: 100%;
 }
+
+@layer utilities {
+  .bg-gradient {
+    background-color: hsla(197, 84%, 95%, 1);
+    background-image: radial-gradient(
+        at 91% 41%,
+        hsla(238, 100%, 93%, 1) 0px,
+        transparent 50%
+      ),
+      radial-gradient(at 13% 65%, hsla(197, 84%, 95%, 1) 0px, transparent 50%),
+      radial-gradient(at 73% 80%, hsla(167, 71%, 95%, 1) 0px, transparent 50%),
+      radial-gradient(at 39% 77%, hsla(40, 84%, 95%, 1) 0px, transparent 50%);
+  }
+}

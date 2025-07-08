@@ -1,10 +1,21 @@
-import { Contract } from '../../../lib/types';
+import { Contract } from '@/lib/types';
 
 export const getContracts = async (): Promise<Contract[]> => {
-  // testing only
-  await new Promise((res) => setTimeout(res, 2000));
+  try {
+    // Simulate delay (for testing)
+    await new Promise((res) => setTimeout(res, 2000));
 
-  const res = await fetch(`${process.env.BACKEND_URL}/contracts/`);
+    const res = await fetch(`${process.env.BACKEND_URL}/contracts/`);
 
-  return res.json();
+    if (!res.ok) {
+      throw new Error(
+        `Failed to fetch contracts: ${res.status} ${res.statusText}`
+      );
+    }
+
+    return res.json();
+  } catch (error) {
+    console.error('Error in getContracts:', error);
+    throw error;
+  }
 };
