@@ -48,17 +48,17 @@ const DataTable = <TData, TValue>({
     setIsMounted(true);
   }, []);
 
-  // --- DEBUGGING STEP 1 ---
-  // Log the raw 'data' prop received by DataTable
-  console.log('DataTable (Prop): Raw data received:', data);
-  console.log('DataTable (Prop): Is data an array?', Array.isArray(data));
-  console.log('DataTable (Prop): Number of items in data:', data?.length);
-  if (data?.length > 0) {
-    console.log('DataTable (Prop): First item in data:', data[0]);
-    console.log('DataTable (Prop): Type of ID in first item:', typeof (data[0] as any).id);
-    console.log('DataTable (Prop): Value of ID in first item:', (data[0] as any).id);
-  }
-  // --- END DEBUGGING STEP 1 ---
+  // // --- DEBUGGING STEP 1 ---
+  // // Log the raw 'data' prop received by DataTable
+  // console.log('DataTable (Prop): Raw data received:', data);
+  // console.log('DataTable (Prop): Is data an array?', Array.isArray(data));
+  // console.log('DataTable (Prop): Number of items in data:', data?.length);
+  // if (data?.length > 0) {
+  //   console.log('DataTable (Prop): First item in data:', data[0]);
+  //   console.log('DataTable (Prop): Type of ID in first item:', typeof (data[0] as any).id);
+  //   console.log('DataTable (Prop): Value of ID in first item:', (data[0] as any).id);
+  // }
+  // // --- END DEBUGGING STEP 1 ---
 
   const displayedData = isDashboard ? data.slice(0, 5) : data;
 
@@ -78,14 +78,14 @@ const DataTable = <TData, TValue>({
     getRowId: (row: TData) => (row as Contract).id.toString(), // Your existing getRowId
   });
 
-  // --- DEBUGGING STEP 2 ---
-  // Log what the table instance *itself* sees as rows
-  console.log('DataTable (Instance): Table instance row count:', table.getRowModel().rows.length);
-  if (table.getRowModel().rows.length > 0) {
-    console.log('DataTable (Instance): First row model ID:', table.getRowModel().rows[0].id);
-    console.log('DataTable (Instance): First row model original data:', table.getRowModel().rows[0].original);
-  }
-  // --- END DEBUGGING STEP 2 ---
+  // // --- DEBUGGING STEP 2 ---
+  // // Log what the table instance *itself* sees as rows
+  // console.log('DataTable (Instance): Table instance row count:', table.getRowModel().rows.length);
+  // if (table.getRowModel().rows.length > 0) {
+  //   console.log('DataTable (Instance): First row model ID:', table.getRowModel().rows[0].id);
+  //   console.log('DataTable (Instance): First row model original data:', table.getRowModel().rows[0].original);
+  // }
+  // // --- END DEBUGGING STEP 2 ---
 
   if (!isMounted) {
     return null;

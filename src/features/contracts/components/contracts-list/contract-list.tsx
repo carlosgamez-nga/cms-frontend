@@ -1,52 +1,75 @@
-// contract-list.tsx
-'use client';
+// src/features/contracts/components/contract-list.tsx (Assuming this is the file)
+'use client'; // <-- Keep this, as it's a Client Component
 
-import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
-
-import DataTable from './data-table';
-import { columns } from './columns';
-import { fetchUserContracts } from '@/features/contracts/queries/get-contracts';
+import * as React from 'react'; // Make sure React is imported
+import { Contract } from '@/lib/types';
+import { fetchUserContracts } from '@/features/contracts/queries/get-contracts'; // Correct import for user-specific fetch
+import DataTable from '@/features/contracts/components/contracts-list/data-table';
+import { columns } from '@/features/contracts/components/contracts-list/columns';
+import Spinner from '@/components/spinner'; // Assuming you have a Spinner component
 
 const ContractList = () => {
-  const [contracts, setContracts] = useState([]); // This will hold the array
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [contracts, setContracts] = React.useState<Contract[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const getContractsData = async () => {
       try {
         setIsLoading(true);
         setError(null);
 
-        const data = await fetchUserContracts(); // `data` will now directly be the array of contracts
+        // 1. Fetch the authentication token from your new Next.js API Route
+        const tokenRes = await fetch('/api/auth/get-token');
+        if (!tokenRes.ok) {
+          const errorData = await tokenRes.json().catch(() => ({}));
+          throw new Error(errorData.message || 'Failed to retrieve authentication token.');
+        }
+        const { token } = await tokenRes.json();
 
-        setContracts(data); // The state is updated with the array
-        toast.success('Contracts loaded successfully!');
-      } catch (err) {
-        console.error('Failed to fetch contracts:', err);
-        setError('Failed to load contracts. Please try again.');
-        toast.error('Failed to load contracts.');
+        if (!token) {
+          throw new Error('Authentication token not available after retrieval.');
+        }
+
+        // 2. Use the retrieved token to fetch user contracts
+        const userContracts = await fetchUserContracts(token);
+        setContracts(userContracts);
+
+      } catch (err: any) {
+        console.error('Error fetching contracts in ContractList:', err);
+        setError(err.message || 'An unknown error occurred.');
+        setContracts([]); // Clear contracts on error
       } finally {
         setIsLoading(false);
       }
     };
 
     getContractsData();
-  }, []);
+  }, []); // Empty dependency array: runs once on mount
 
   if (isLoading) {
-    return <div className="text-center py-8">Loading contracts...</div>;
+    return (
+      <div className='flex justify-center items-center h-64'>
+        <Spinner /> {/* Show a loading spinner while fetching */}
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="text-center py-8 text-red-500">{error}</div>;
+    return (
+      <div className='text-center text-red-500 p-4'>
+        Error loading contracts: {error}
+        {error.includes('Authentication required') && (
+            <p>Please ensure you are logged in correctly.</p>
+        )}
+      </div>
+    );
   }
 
   return (
     <div>
-      {/* DataTable receives the array directly in its `data` prop */}
-      <DataTable columns={columns} data={contracts} />
+      {/* Pass the state-managed contracts to DataTable */}
+      <DataTable columns={columns} data={contracts} isDashboard={false} /> {/* isDashboard set to false for full list */}
     </div>
   );
 };

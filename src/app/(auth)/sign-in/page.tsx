@@ -30,63 +30,68 @@ import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/password-input';
 import ngaIconH from '/public/logo-h.svg';
 
-import axios from 'axios'; // <-- NEW: Import axios for API calls
+import axios from 'axios'; // <-- Existing: Import axios for API calls
+import { toast } from 'sonner'; // <-- Ensure toast is imported for notifications
 
-// --- Configuration: Adjust this to your Django backend's URL ---
-const API_BASE_URL = 'http://localhost:8000/api'; // Make sure this matches your Django server
-// --- End Configuration ---
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 // --- Zod Schema ---
 const formSchema = z.object({
-  // 'identifier' will accept either email or username
   identifier: z.string().min(1, 'Email or username is required.'),
-  
-  password: z
-    .string()
-    .min(1, 'Password is required.'), // Changed min length for login, as validation is handled by Django
-    // Removed strict password refine for login, as Django handles this.
-    // .refine((password) => {
-    //   return /^(?=.*[!@#$%^&*])(?=.*[A-Z]).*$/.test(password);
-    // }, 'The password must contain at least 1 uppercase letter and 1 special character'),
-  
-  // Removed 'acceptTerms' as it's not a login field.
+  password: z.string().min(1, 'Password is required.'),
 });
 // --- End Zod Schema ---
 
-
 const SigninPage = () => {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false); // <-- NEW: State to manage loading status
+  const [isLoading, setIsLoading] = useState(false); // State to manage loading status
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       identifier: '',
       password: '',
-      // Removed default for acceptTerms as it's no longer in schema
     },
   });
 
-  // --- Core Function: handleSignIn (formerly handleSubmit) ---
+  // --- Core Function: handleSignIn ---
   const handleSignIn = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true); // Set loading state to true
     try {
-      // API Call: Authenticate user via Django's api-token-auth/ endpoint
-      // This endpoint expects 'username' and 'password' in the payload.
-      // Your CustomAuthToken view will intelligently handle if 'username' is an email.
-      const response = await axios.post(`${API_BASE_URL}/api-token-auth/`, {
-        username: data.identifier, // Send the 'identifier' as 'username' to Django
+      // 1. API Call: Authenticate user via Django's api-token-auth/ endpoint
+      const response = await axios.post(`${API_BASE_URL}/api/api-token-auth/`, {
+        username: data.identifier,
         password: data.password,
       });
 
-      const { token, user_id, email } = response.data; // Extract token and other user data
-      localStorage.setItem('authToken', token); // Store the authentication token
+      const { token } = response.data; // Extract token
 
-      // You can store more user data if needed, e.g.:
-      // localStorage.setItem('userId', user_id);
-      // localStorage.setItem('userEmail', email);
+      console.log('Token received from Django before sending to Next.js API route:', token); // <-- ADD THIS LINE
 
-      console.log('Login successful! Token:', token);
+      if (!token) {
+        throw new Error('Authentication token not received from server.');
+      }
+
+      // --- START: NEW CODE TO SET HTTP-ONLY COOKIE VIA NEXT.JS API ROUTE ---
+      // 2. Call your New Next.js API Route to Set the Cookie
+      const setCookieRes = await fetch('/api/auth/set-cookie', { // Make sure this path matches your route.ts location
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token }),
+      });
+
+      if (!setCookieRes.ok) {
+        const errorData = await setCookieRes.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to set authentication cookie.');
+      }
+      // --- END: NEW CODE ---
+
+      // REMOVE: localStorage.setItem('authToken', token); // This is no longer needed for cookie-based auth
+
+      toast.success('Logged in successfully!');
+      console.log('Login successful! Auth token cookie set.');
       router.push('/dashboard'); // Redirect to dashboard on successful login
 
     } catch (error) {
@@ -94,33 +99,27 @@ const SigninPage = () => {
       let errorMessage = 'An unexpected error occurred during sign-in.';
 
       if (axios.isAxiosError(error) && error.response) {
-        // Log full Django error details for debugging
         console.error("Django API Error Details:", error.response.data);
 
         if (error.response.status === 400 || error.response.status === 401) {
-          // These status codes typically indicate invalid credentials or validation errors
           const apiErrorData = error.response.data;
           if (apiErrorData.detail) {
-            errorMessage = apiErrorData.detail; // Django REST Framework's default error message
+            errorMessage = apiErrorData.detail;
           } else if (apiErrorData.non_field_errors) {
             errorMessage = apiErrorData.non_field_errors.join(', ');
           } else {
-            // Catch other possible errors returned by Django if structure differs
             errorMessage = JSON.stringify(apiErrorData);
           }
         } else {
-          // Other server errors (e.g., 500)
           errorMessage = `Server error: ${error.response.status} - ${error.response.statusText}`;
         }
       } else {
-        // Network errors or other non-Axios errors
         errorMessage = error.message;
       }
 
-      console.error(`Sign-in failed: ${errorMessage}`); // Display a user-friendly error
-      // You could use a UI component for displaying this message to the user, like a toast.
+      toast.error(errorMessage); // Display error to the user
     } finally {
-      setIsLoading(false); // Reset loading state regardless of success or failure
+      setIsLoading(false); // Reset loading state
     }
   };
   // --- End handleSignIn Function ---
@@ -139,21 +138,20 @@ const SigninPage = () => {
           <Form {...form}>
             <form
               className='flex flex-col gap-8'
-              // IMPORTANT: Link form submission to the new handleSignIn function
               onSubmit={form.handleSubmit(handleSignIn)}
             >
               <FormField
                 control={form.control}
-                name='identifier' // <-- Corrected name to 'identifier'
+                name='identifier'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email or Username</FormLabel> {/* <-- Updated label */}
+                    <FormLabel>Email or Username</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder='Enter email or username...' // <-- Updated placeholder
-                        type='text' // Use 'text' since it can be either email or username
+                        placeholder='Enter email or username...'
+                        type='text'
                         {...field}
-                        disabled={isLoading} // <-- Disable during loading
+                        disabled={isLoading}
                       />
                     </FormControl>
                     <FormMessage />
@@ -170,15 +168,15 @@ const SigninPage = () => {
                       <PasswordInput
                         placeholder='Enter password...'
                         {...field}
-                        disabled={isLoading} // <-- Disable during loading
+                        disabled={isLoading}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type='submit' disabled={isLoading}> {/* <-- Disable during loading */}
-                {isLoading ? 'Signing in...' : 'Sign in'} {/* <-- Dynamic button text */}
+              <Button type='submit' disabled={isLoading}>
+                {isLoading ? 'Signing in...' : 'Sign in'}
               </Button>
             </form>
           </Form>
@@ -199,7 +197,7 @@ const SigninPage = () => {
       </Card>
       <div className='flex gap-2 justify-center items-center mt-8'>
         <small>Don&lsquo;t have an account?</small>
-        <Link href='/sign-up' className='text-xs text-primary'> {/* <-- Ensure this link is correct for your signup page */}
+        <Link href='/sign-up' className='text-xs text-primary'>
           Sign Up
         </Link>
       </div>

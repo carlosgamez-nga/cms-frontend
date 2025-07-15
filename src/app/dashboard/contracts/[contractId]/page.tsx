@@ -1,32 +1,47 @@
+// app/dashboard/contracts/[contractId]/page.tsx
+
 import { notFound } from 'next/navigation';
-// import ContractItem from '@/features/contract/components/contract-item';
-// import { Suspense } from 'react';
-// import Spinner from '@/components/spinner';
-// import ChartCard from '@/components/chart-card';
-import CodeList from '@/features/cpt-codes/components/code-list';
-
-import { CodeCPT } from '@/lib/types';
-
-import { getContract } from '@/features/contracts/queries/get-contract';
+import { cookies } from 'next/headers'; // <-- IMPORT cookies
+import { getContract } from '@/features/contracts/queries/get-contracts';
 import { getCptCodes } from '@/features/cpt-codes/queries/get-codes';
 import CMSDataChart from '@/features/charts/components/cms-data-chart';
 import PayerPriceDataChart from '@/features/charts/components/payer-price-data-chart';
 import NewContractDataChart from '@/features/charts/components/new-contract-data-chart';
+import CodeList from '@/features/cpt-codes/components/code-list'; // Assuming this uses CodeCPT[]
+
+import { CodeCPT, Contract } from '@/lib/types'; // Ensure Contract is also imported
 
 type ContractProps = {
   params: {
     contractId: string;
   };
-  codes: CodeCPT[];
+  // codes: CodeCPT[]; // This prop isn't used in the function signature, can be removed or ensure it's passed if intended.
 };
 
 const ContractPage = async ({ params }: ContractProps) => {
-  const { contractId } = await params;
-  const contract = await getContract(contractId);
+  // --- FIX 1: Correctly get contractId (no await needed for params) ---
+  const { contractId } = params;
+  // --- END FIX 1 ---
 
-  const codes_data = await getCptCodes();
+  // --- FIX 2: Get authToken from cookies ---
+  const cookieStore = await cookies();
+  const authToken = cookieStore.get('authToken')?.value;
+  // --- END FIX 2 ---
+
+  if (!authToken) {
+    console.warn('No auth token found for ContractPage. Redirecting to login or showing not found.');
+    // You might want to redirect to login or show a specific unauthorized page
+    notFound(); // Or redirect('/login');
+  }
+
+  // --- FIX 3: Pass authToken to getContract ---
+  const contract = await getContract(contractId, authToken); // <-- Pass the authToken
+  // --- END FIX 3 ---
+
+  const codes_data = await getCptCodes(); // Assuming getCptCodes does not need auth or gets it internally
 
   if (!contract) {
+    console.warn(`Contract with ID ${contractId} not found after authenticated fetch.`);
     notFound();
   }
 
@@ -48,23 +63,6 @@ const ContractPage = async ({ params }: ContractProps) => {
         </div>
       </div>
     </div>
-
-    // ---------------> OLD Layout <-----------------
-    // <div className='flex flex-col justify-center w-full'>
-    //   <div className='grid grid-cols-6 grid-row-2 gap-4 w-full items-start'>
-    //     <div className='col-span-6 lg:col-span-2 lg:row-start-2'>
-    //       <ContractItem contract={contract} isDetail data={codes_data} />
-    //     </div>
-    //     <div className='col-span-6 lg:col-span-4 lg:col-start-3'>
-    //
-    //     </div>
-    //     <div className='col-span-6 lg:col-span-4'>
-    //       <Suspense fallback={<Spinner />}>
-    //         <ChartCard />
-    //       </Suspense>
-    //     </div>
-    //   </div>
-    // </div>
   );
 };
 
