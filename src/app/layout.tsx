@@ -18,7 +18,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en'>
+    // --- Suggested Modification: Add suppressHydrationWarning ---
+    // This tells React to ignore mismatches on these attributes during hydration.
+    // It's commonly used when a client-side script (like a theme toggle) modifies
+    // attributes that are also set by the server.
+    <html lang='en' suppressHydrationWarning>
       <body className={`${nunitoSans.variable}`}>{children}</body>
     </html>
   );

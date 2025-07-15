@@ -102,11 +102,26 @@
     "line_of_business": "Commercial",
     "year": "2025",
     "cpt_prices": [
-      { "cpt_code": "91000", "price": 99.1 },
-      { "cpt_code": "91001", "price": 86.5 },
-      { "cpt_code": "99213", "price": 80.0 },
-      { "cpt_code": "99214", "price": 110.0 },
-      { "cpt_code": "20610", "price": 57.0 }
+      {
+        "cpt_code": "91000",
+        "price": 99.1
+      },
+      {
+        "cpt_code": "91001",
+        "price": 86.5
+      },
+      {
+        "cpt_code": "99213",
+        "price": 80
+      },
+      {
+        "cpt_code": "99214",
+        "price": 110
+      },
+      {
+        "cpt_code": "20610",
+        "price": 57
+      }
     ]
   },
   "cms_data": {
@@ -118,11 +133,26 @@
     "carrier_code": "67890",
     "year": "2025",
     "cpt_prices": [
-      { "cpt_code": "91000", "price": 87.4 },
-      { "cpt_code": "91001", "price": 80.1 },
-      { "cpt_code": "99213", "price": 78.0 },
-      { "cpt_code": "99214", "price": 105.0 },
-      { "cpt_code": "20610", "price": 53.5 }
+      {
+        "cpt_code": "91000",
+        "price": 87.4
+      },
+      {
+        "cpt_code": "91001",
+        "price": 80.1
+      },
+      {
+        "cpt_code": "99213",
+        "price": 78
+      },
+      {
+        "cpt_code": "99214",
+        "price": 105
+      },
+      {
+        "cpt_code": "20610",
+        "price": 53.5
+      }
     ]
   },
   "payer_price_data": {
@@ -136,46 +166,46 @@
         "cpt_code": "91000",
         "median_price": 99.1,
         "percentile_rate_25": 89.5,
-        "percentile_rate_50": 95.0,
+        "percentile_rate_50": 95,
         "percentile_rate_75": 103.75,
-        "percentile_rate_90": 110.0,
+        "percentile_rate_90": 110,
         "percentile_rate_95": 115.25
       },
       {
         "cpt_code": "91001",
         "median_price": 86.5,
         "percentile_rate_25": 78.25,
-        "percentile_rate_50": 83.0,
+        "percentile_rate_50": 83,
         "percentile_rate_75": 91.5,
-        "percentile_rate_90": 98.0,
-        "percentile_rate_95": 103.0
+        "percentile_rate_90": 98,
+        "percentile_rate_95": 103
       },
       {
         "cpt_code": "99213",
         "median_price": 82.5,
-        "percentile_rate_25": 75.0,
-        "percentile_rate_50": 80.0,
-        "percentile_rate_75": 88.0,
-        "percentile_rate_90": 95.0,
-        "percentile_rate_95": 100.0
+        "percentile_rate_25": 75,
+        "percentile_rate_50": 80,
+        "percentile_rate_75": 88,
+        "percentile_rate_90": 95,
+        "percentile_rate_95": 100
       },
       {
         "cpt_code": "99214",
-        "median_price": 115.0,
-        "percentile_rate_25": 100.0,
-        "percentile_rate_50": 110.0,
-        "percentile_rate_75": 120.0,
-        "percentile_rate_90": 130.0,
-        "percentile_rate_95": 135.0
+        "median_price": 115,
+        "percentile_rate_25": 100,
+        "percentile_rate_50": 110,
+        "percentile_rate_75": 120,
+        "percentile_rate_90": 130,
+        "percentile_rate_95": 135
       },
       {
         "cpt_code": "20610",
-        "median_price": 59.0,
-        "percentile_rate_25": 50.0,
-        "percentile_rate_50": 56.0,
-        "percentile_rate_75": 62.0,
-        "percentile_rate_90": 68.0,
-        "percentile_rate_95": 72.0
+        "median_price": 59,
+        "percentile_rate_25": 50,
+        "percentile_rate_50": 56,
+        "percentile_rate_75": 62,
+        "percentile_rate_90": 68,
+        "percentile_rate_95": 72
       }
     ]
   },
@@ -188,12 +218,40 @@
     "line_of_business": "Commercial",
     "year": "2025",
     "cpt_prices": [
-      { "cpt_code": "91000", "price": 101.25 },
-      { "cpt_code": "91001", "price": 89.75 },
-      { "cpt_code": "99213", "price": 83.25 },
-      { "cpt_code": "99214", "price": 117.0 },
-      { "cpt_code": "20610", "price": 60.0 }
+      {
+        "cpt_code": "91000",
+        "price": 101.25
+      },
+      {
+        "cpt_code": "91001",
+        "price": 89.75
+      },
+      {
+        "cpt_code": "99213",
+        "price": 83.25
+      },
+      {
+        "cpt_code": "99214",
+        "price": 117
+      },
+      {
+        "cpt_code": "20610",
+        "price": 60
+      }
     ]
   },
-  "upload": []
+  "upload": [
+    {
+      "apiId": "contracts",
+      "id": 1
+    },
+    {
+      "apiId": "contracts",
+      "id": 2
+    },
+    {
+      "apiId": "contracts",
+      "id": 3
+    }
+  ]
 }

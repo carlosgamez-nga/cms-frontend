@@ -35,9 +35,7 @@ import { FcGoogle } from 'react-icons/fc';
 
 import axios from 'axios'; // Import axios
 
-// --- Configuration ---
-const API_BASE_URL = 'http://localhost:8000/api';
-// --- End Configuration ---
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 
 // --- Zod Schema (as defined above) ---
 const formSchema = z.object({
@@ -264,7 +262,7 @@ const SignUpPage = () => {
       </Card>
       <div className='flex gap-2 justify-center items-center mt-8'>
         <small>Already have an account?</small>
-        <Link href='/login' className='text-xs text-primary'>
+        <Link href='/sign-in' className='text-xs text-primary'>
           Login
         </Link>
       </div>
