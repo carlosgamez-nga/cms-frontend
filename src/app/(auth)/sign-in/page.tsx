@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/password-input';
-import ngaIconH from '/public/logo-h.svg';
+import ngaIconH from '@/public/logo-h.svg';
 
 import axios from 'axios'; // <-- Existing: Import axios for API calls
 import { toast } from 'sonner'; // <-- Ensure toast is imported for notifications
@@ -66,7 +66,10 @@ const SigninPage = () => {
 
       const { token } = response.data; // Extract token
 
-      console.log('Token received from Django before sending to Next.js API route:', token); // <-- ADD THIS LINE
+      console.log(
+        'Token received from Django before sending to Next.js API route:',
+        token
+      ); // <-- ADD THIS LINE
 
       if (!token) {
         throw new Error('Authentication token not received from server.');
@@ -74,7 +77,8 @@ const SigninPage = () => {
 
       // --- START: NEW CODE TO SET HTTP-ONLY COOKIE VIA NEXT.JS API ROUTE ---
       // 2. Call your New Next.js API Route to Set the Cookie
-      const setCookieRes = await fetch('/api/auth/set-cookie', { // Make sure this path matches your route.ts location
+      const setCookieRes = await fetch('/api/auth/set-cookie', {
+        // Make sure this path matches your route.ts location
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -84,7 +88,9 @@ const SigninPage = () => {
 
       if (!setCookieRes.ok) {
         const errorData = await setCookieRes.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Failed to set authentication cookie.');
+        throw new Error(
+          errorData.message || 'Failed to set authentication cookie.'
+        );
       }
       // --- END: NEW CODE ---
 
@@ -93,13 +99,12 @@ const SigninPage = () => {
       toast.success('Logged in successfully!');
       console.log('Login successful! Auth token cookie set.');
       router.push('/dashboard'); // Redirect to dashboard on successful login
-
     } catch (error) {
       console.error('Sign-in failed:', error);
       let errorMessage = 'An unexpected error occurred during sign-in.';
 
       if (axios.isAxiosError(error) && error.response) {
-        console.error("Django API Error Details:", error.response.data);
+        console.error('Django API Error Details:', error.response.data);
 
         if (error.response.status === 400 || error.response.status === 401) {
           const apiErrorData = error.response.data;
@@ -113,8 +118,10 @@ const SigninPage = () => {
         } else {
           errorMessage = `Server error: ${error.response.status} - ${error.response.statusText}`;
         }
-      } else {
+      } else if (error instanceof Error) {
         errorMessage = error.message;
+      } else {
+        errorMessage = 'An unexpected error occurred during sign-in.';
       }
 
       toast.error(errorMessage); // Display error to the user
@@ -123,7 +130,6 @@ const SigninPage = () => {
     }
   };
   // --- End handleSignIn Function ---
-
 
   return (
     <>
@@ -187,7 +193,12 @@ const SigninPage = () => {
           </span>
         </div>
         <CardFooter>
-          <Button className='w-full ' asChild variant='secondary' disabled={isLoading}>
+          <Button
+            className='w-full '
+            asChild
+            variant='secondary'
+            disabled={isLoading}
+          >
             <Link href='/'>
               <FcGoogle />
               Sign in with Google
