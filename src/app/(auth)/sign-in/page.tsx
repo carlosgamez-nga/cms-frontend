@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/password-input';
-import ngaIconH from '@/public/logo-h.svg';
+import ngaIconH from '/public/logo-h.svg';
 
 import axios from 'axios'; // <-- Existing: Import axios for API calls
 import { toast } from 'sonner'; // <-- Ensure toast is imported for notifications
