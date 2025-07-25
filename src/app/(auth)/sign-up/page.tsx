@@ -34,8 +34,10 @@ import ngaIconH from '/public/logo-h.svg';
 import { FcGoogle } from 'react-icons/fc';
 
 import axios from 'axios'; // Import axios
+import { Aperture } from 'lucide-react';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL +'/api'
+console.log('API BASE URL: ', API_BASE_URL)
 
 // --- Zod Schema (as defined above) ---
 const formSchema = z.object({

@@ -37,7 +37,7 @@ export const getContract = async (contractId: string, authToken?: string): Promi
     }
 
     const res = await fetch(
-      `${API_BASE_URL}/api/my-contracts/${contractId}/`, // Assuming this is your Django endpoint for a single user contract
+      `${API_BASE_URL}/api/contracts/${contractId}/`, // Assuming this is your Django endpoint for a single user contract
       {
         method: 'GET',
         headers: {
@@ -88,7 +88,7 @@ export const fetchUserContracts = async (authToken?: string): Promise<Contract[]
     // --- END IMPORTANT CHECK ---
 
     const res = await fetch(
-      `${API_BASE_URL}/api/my-contracts/`, // Assuming this is your endpoint for user contracts
+      `${API_BASE_URL}/api/contracts/`, // Assuming this is your endpoint for user contracts
       {
         method: 'GET',
         headers: {
