@@ -149,4 +149,16 @@ body,
       radial-gradient(at 73% 80%, hsla(167, 71%, 95%, 1) 0px, transparent 50%),
       radial-gradient(at 39% 77%, hsla(40, 84%, 95%, 1) 0px, transparent 50%);
   }
+
+  .dark .bg-gradient {
+    background-color: hsla(220, 60%, 10%, 1);
+    background-image: radial-gradient(
+        at 91% 41%,
+        hsla(280, 80%, 25%, 0.7) 0px,
+        transparent 50%
+      ),
+      radial-gradient(at 13% 65%, hsla(240, 60%, 20%, 0.6) 0px, transparent 50%),
+      radial-gradient(at 73% 80%, hsla(200, 70%, 15%, 0.6) 0px, transparent 50%),
+      radial-gradient(at 39% 77%, hsla(340, 65%, 20%, 0.5) 0px, transparent 50%);
+  }
 }
