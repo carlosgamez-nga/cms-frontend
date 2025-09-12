@@ -4,7 +4,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function fetchUserDetails(token: string) {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/user-details`, { // Adjust this URL to your actual user details endpoint
+    const response = await fetch(`${API_BASE_URL}/api/user-details`, { 
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
