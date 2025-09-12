@@ -38,6 +38,7 @@ import {
 } from '@/components/ui/select';
 import { postContract } from '../queries/post-contract';
 import { useState } from 'react';
+import Spinner from '@/components/spinner';
 
 type ContractUploadProps = {
   title: string;
@@ -114,6 +115,8 @@ const formSchema = z.object({
 });
 
 export default function ContractUpload({ title }: ContractUploadProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
@@ -129,6 +132,7 @@ export default function ContractUpload({ title }: ContractUploadProps) {
   });
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsSubmitting(true);
     try {
       await postContract(values);
       toast.success('Contract submitted successfully!', {
@@ -144,6 +148,8 @@ export default function ContractUpload({ title }: ContractUploadProps) {
       });
 
       console.error('Submission error:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -267,8 +273,8 @@ export default function ContractUpload({ title }: ContractUploadProps) {
                   )}
                 />
 
-                <Button type='submit' disabled={!isValid}>
-                  Submit
+                <Button type='submit' disabled={isSubmitting}>
+                  {isSubmitting ? <Spinner /> : 'Submit'}
                 </Button>
               </form>
             </Form>

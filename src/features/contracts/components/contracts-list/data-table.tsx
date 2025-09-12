@@ -60,10 +60,11 @@ const DataTable = <TData, TValue>({
   // }
   // // --- END DEBUGGING STEP 1 ---
 
-  const displayedData = isDashboard ? data.slice(0, 5) : data;
+  // const displayedData = isDashboard ? data.slice(0, 5) : data;
 
   const table = useReactTable({
-    data: displayedData, // This is the data source for the table instance
+    //data: displayedData, // This is the data source for the table instance
+    data,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -75,7 +76,7 @@ const DataTable = <TData, TValue>({
       sorting,
       columnFilters,
     },
-    getRowId: (row: TData) => (row as Contract).id.toString(), // Your existing getRowId
+    // getRowId: (row: TData) => (row as Contract).id.toString(), // Your existing getRowId
   });
 
   // // --- DEBUGGING STEP 2 ---
@@ -93,22 +94,24 @@ const DataTable = <TData, TValue>({
 
   return (
     <div className='p-4 border bg-background shadow-sm rounded-lg mt-4 md:w-full lg:max-w-[1024px] lg:mx-auto '>
-      <div className='flex items-center py-4'>
-        <Label
-          htmlFor='search'
-          className='min-w-[80px] text-sm font-medium mr-2'
-        >
-          Search
-        </Label>
-        <Input
-          id='search'
-          placeholder='Search contract by title...'
-          value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
-          onChange={(e) =>
-            table.getColumn('title')?.setFilterValue(e.target.value)
-          }
-        />
-      </div>
+      {!isDashboard && (
+        <div className='flex items-center py-4'>
+          <Label
+            htmlFor='search'
+            className='min-w-[80px] text-sm font-medium mr-2'
+          >
+            Search
+          </Label>
+          <Input
+            id='search'
+            placeholder='Search contract by title...'
+            value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
+            onChange={(e) =>
+              table.getColumn('title')?.setFilterValue(e.target.value)
+            }
+          />
+        </div>
+      )}
       <div className='rounded-md'>
         <div className='rounded-md border overflow-x-auto w-full'>
           <Table>
