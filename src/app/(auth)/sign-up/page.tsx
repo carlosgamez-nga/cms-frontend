@@ -3,147 +3,49 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react'; // Import useState
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+import { FcGoogle } from 'react-icons/fc';
 
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/password-input';
 import { Checkbox } from '@/components/ui/checkbox';
-
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod'; // Zod is already imported
-
 import ngaIconH from '/public/logo-h.svg';
-import { FcGoogle } from 'react-icons/fc';
+import { signUpUser } from '@/features/auth/queries/sign-up-user';
 
-import axios from 'axios'; // Import axios
-import { Aperture } from 'lucide-react';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL +'/api'
-console.log('API BASE URL: ', API_BASE_URL)
-
-// --- Zod Schema (as defined above) ---
 const formSchema = z.object({
-  username: z.string()
-    .min(3, 'Username must be at least 3 characters.')
-    .max(50, 'Username cannot exceed 50 characters.'),
-  
+  username: z.string().min(3, 'Username must be at least 3 characters.').max(50, 'Username cannot exceed 50 characters.'),
   email: z.string().email('Please enter a valid email address.'),
-  
-  password: z
-    .string()
-    .min(8, 'Password must contain at least 8 characters')
-    .refine((password) => {
-      return /^(?=.*[!@#$%^&*])(?=.*[A-Z]).*$/.test(password);
-    }, 'The password must contain at least 1 uppercase letter and 1 special character'),
-  
-  acceptTerms: z
-    .boolean({
-      required_error:
-        'To be able to sign up, you must accept the terms and conditions',
-    })
-    .refine(
-      (checked) => checked,
-      'To be able to sign up, you must accept the terms and conditions'
-    ),
+  password: z.string().min(8, 'Password must contain at least 8 characters').refine((password) => /^(?=.*[!@#$%^&*])(?=.*[A-Z]).*$/.test(password), 'Password must contain at least 1 uppercase letter and 1 special character'),
+  acceptTerms: z.boolean().refine((checked) => checked, 'You must accept the terms and conditions to sign up'),
 });
-// --- End Zod Schema ---
-
 
 const SignUpPage = () => {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false); // State for loading indicator
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      username: '', // NEW default value
-      email: '',    // Changed from 'identifier' to 'email'
-      password: '',
-      acceptTerms: false,
-    },
+    defaultValues: { username: '', email: '', password: '', acceptTerms: false },
   });
 
   const handleSignUp = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
-      // --- Step 1: Register the new user with Django API ---
-      // Send both username and email to the registration endpoint
-      const registerResponse = await axios.post(`${API_BASE_URL}/register/`, {
-        username: data.username, // Send the username
-        email: data.email,       // Send the email
-        password: data.password,
-      });
-
-      console.log('User registered successfully:', registerResponse.data);
-
-      // --- Step 2: Log in the newly registered user to get an authentication token ---
-      // For login, typically you'd use the username (or email if your custom view handles it)
-      const loginResponse = await axios.post(`${API_BASE_URL}/api-token-auth/`, {
-        username: data.username, // Use the username for login
-        password: data.password,
-      });
-
-      const { token } = loginResponse.data;
-      localStorage.setItem('authToken', token);
-      console.log('Login successful, token obtained:', token);
-
-      router.push('/dashboard');
-    } catch (error) {
+      await signUpUser(data);
+      toast.success('Account created successfully!');
+      window.location.href = '/dashboard'; // Full reload to refresh server state
+    } catch (error: any) {
       console.error('Sign up failed:', error);
-      let errorMessage = 'An unexpected error occurred during sign up.';
-
-      if (axios.isAxiosError(error) && error.response) {
-        const apiErrorData = error.response.data;
-        console.error("Django API Error Details:", apiErrorData); // Log full error from Django
-
-        if (error.response.status === 400) {
-          // Handle specific validation errors for username and email
-          if (apiErrorData.username) {
-            errorMessage = `Username: ${apiErrorData.username.join(', ')}`;
-          } else if (apiErrorData.email) {
-            errorMessage = `Email: ${apiErrorData.email.join(', ')}`;
-          } else if (apiErrorData.password) {
-            errorMessage = `Password: ${apiErrorData.password.join(', ')}`;
-          } else if (apiErrorData.non_field_errors) {
-            errorMessage = `${apiErrorData.non_field_errors.join(', ')}`;
-          } else if (typeof apiErrorData === 'string') {
-            errorMessage = apiErrorData;
-          } else {
-            errorMessage = JSON.stringify(apiErrorData);
-          }
-        } else if (error.response.status === 401) {
-          errorMessage = 'Authentication failed. Please try logging in manually.';
-        } else {
-          errorMessage = `Server error: ${error.response.status} - ${error.response.statusText}`;
-          if (apiErrorData.detail) {
-            errorMessage = apiErrorData.detail;
-          }
-        }
-      } else {
-        errorMessage = error.message;
-      }
-
-      console.error(`Sign up failed: ${errorMessage}`);
+      toast.error(error.message || 'An unexpected error occurred.');
     } finally {
-      setIsLoading(false); // Reset loading state
+      setIsLoading(false);
     }
   };
 
@@ -160,46 +62,32 @@ const SignUpPage = () => {
               className='flex flex-col gap-8'
               onSubmit={form.handleSubmit(handleSignUp)}
             >
-              {/* NEW: Username Field */}
               <FormField
                 control={form.control}
-                name='username' // Field name from your Zod schema
+                name='username'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Username</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder='Choose a username...'
-                        type='text'
-                        {...field}
-                        disabled={isLoading}
-                      />
+                      <Input placeholder='Choose a username...' type='text' {...field} disabled={isLoading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
-              {/* Updated: Email Field (formerly 'identifier') */}
               <FormField
                 control={form.control}
-                name='email' // Field name from your Zod schema
+                name='email'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Email Address</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder='Enter email address...'
-                        type='email' // Use 'email' type for browser validation
-                        {...field}
-                        disabled={isLoading}
-                      />
+                      <Input placeholder='Enter email address...' type='email' {...field} disabled={isLoading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name='password'
@@ -207,40 +95,42 @@ const SignUpPage = () => {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <PasswordInput
-                        placeholder='Enter password...'
-                        {...field}
-                        disabled={isLoading}
-                      />
+                      <PasswordInput placeholder='Enter password...' {...field} disabled={isLoading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
+              {/* --- THIS IS THE CORRECTED FIELD --- */}
               <FormField
                 control={form.control}
                 name='acceptTerms'
                 render={({ field }) => (
-                  <FormItem>
-                    <div className='flex gap-2 items-center'>
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          disabled={isLoading}
-                        />
-                      </FormControl>
-                      <FormLabel>I accept the terms and conditions</FormLabel>
+                  <FormItem className='flex flex-row items-start space-x-3 space-y-0'>
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        disabled={isLoading}
+                      />
+                    </FormControl>
+                    <div className='space-y-1 leading-none'>
+                      <FormLabel>
+                        I accept the terms and conditions
+                      </FormLabel>
+                      <FormDescription>
+                        By signing up you agree to our{' '}
+                        <Link href='/terms' className='text-primary hover:underline'>
+                          terms and conditions
+                        </Link>
+                      </FormDescription>
                     </div>
-                    <FormDescription>
-                      By signing up you agree to our{' '}
-                      <Link href='/terms'>terms and conditions</Link>
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              {/* --- END OF FIX --- */}
 
               <Button type='submit' disabled={isLoading}>
                 {isLoading ? 'Signing up...' : 'Sign up'}
@@ -254,7 +144,7 @@ const SignUpPage = () => {
           </span>
         </div>
         <CardFooter>
-          <Button className='w-full ' asChild variant='secondary' disabled={isLoading}>
+          <Button className='w-full' asChild variant='secondary' disabled={isLoading}>
             <Link href='/'>
               <FcGoogle />
               Sign up with Google

@@ -1,61 +1,22 @@
-import axios from 'axios';
+// src/features/contracts/queries/post-contract.ts
 
-type ValuesProps = {
-  title: string;
-  description: string;
-  payer_name: string;
-  state: string;
-  file: File;
-};
+/**
+ * Submits contract FormData to the internal Next.js API route.
+ * This function runs on the client.
+ */
+export async function postContract(formData: FormData): Promise<any> {
+  // The URL now points to your internal API route.
+  const apiUrl = '/api/contracts/upload';
 
-export const postContract = async (values: ValuesProps) => {
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const response = await fetch(apiUrl, {
+    method: 'POST',
+    body: formData,
+    // No auth headers are needed here; the browser sends the cookie.
+  });
 
-  // --- ADD THIS LINE ---
-  console.log('API_BASE_URL from environment:', API_BASE_URL);
-  // --- END ADDITION ---
-
-
-  const formData = new FormData();
-  formData.append('title', values.title);
-  formData.append('description', values.description);
-  formData.append('payer_name', values.payer_name);
-  formData.append('state', values.state);
-  formData.append('file', values.file);
-
-  // --- ADD THIS LINE to check FormData contents (optional, but helpful) ---
-  console.log('FormData contents:');
-  for (let [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
+  const responseData = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(responseData.error || responseData.detail || 'Contract submission failed.');
   }
-  // --- END ADDITION ---
-
-
-  const authToken = localStorage.getItem('authToken');
-
-  if (!authToken) {
-    throw new Error('Authentication token not found. Please log in.');
-  }
-
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/contracts/upload/`, {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'Authorization': `Token ${authToken}`,
-      },
-    });
-
-    if (!res.ok) {
-      const errorData = await res.json();
-      console.error('API Error Response:', errorData);
-      throw new Error(errorData.detail || errorData.message || 'Failed to upload contract. Please check server logs.');
-    }
-
-    const data = await res.json();
-    return data;
-  } catch (error) {
-    console.error('Error during contract upload:', error);
-    throw error;
-  }
-};
+  return responseData;
+}

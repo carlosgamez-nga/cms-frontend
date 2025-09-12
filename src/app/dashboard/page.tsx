@@ -1,8 +1,8 @@
-// app/dashboard/page.tsx (or app/page.tsx)
+// app/dashboard/page.tsx
 
-import { cookies } from 'next/headers';
-import { fetchUserContracts } from '@/features/contracts/queries/get-contracts';
-import { fetchUserDetails } from '@/features/auth/queries/get-user'; // <--- Import the new function
+import { getContractsOnServer } from '@/features/contracts/queries/get-contracts.server';
+import { getUserDetailsOnServer } from '@/features/auth/queries/get-user.server';
+
 import Banner from './components/banner';
 import ContractUpload from '@/features/contracts/components/contract-upload';
 import Heading from './components/heading';
@@ -10,45 +10,36 @@ import CardsGrid from './components/cards/cards-grid';
 import RecentContracts from './components/recent-contracts/recent-contracts';
 import ContractsRevenue from './components/contracts-revenue/contracts-revenue';
 
+export const dynamic = 'force-dynamic';
 
+// This is a Server Component, so it can be async.
 export default async function Home() {
-  const cookieStore = await cookies();
-  const authToken = cookieStore.get('authToken')?.value;
+  // --- REFACTORED DATA FETCHING LOGIC ---
+  // 1. We no longer need to manually get cookies or the token here.
+  //    The helper functions in 'get-contracts' and 'get-user' will do it for us.
 
-  let contracts = [];
-  let username = 'Guest'; // <--- Default username
-  let user = null; // To store full user object
+  // 2. We can fetch both user details and contracts in parallel for better performance.
+  const [user, contracts] = await Promise.all([
+    getUserDetailsOnServer(), // This function will get the token and call Django.
+    getContractsOnServer(),   // This function will also get the token and call Django.
+  ]);
+  
+  // 3. The username defaults to 'Guest' if the user object is null (not logged in).
+  const username = user?.username || 'Guest';
+  const displayUsername = username.charAt(0).toUpperCase() + username.slice(1);
 
-  if (authToken) {
-    try {
-      // Fetch user details
-      user = await fetchUserDetails(authToken);
-      username = user.username || 'User'; // Use fetched username, fallback to 'User'
-      console.log('Home (Server): Fetched user details:', user);
-
-      // Fetch contracts
-      contracts = await fetchUserContracts(authToken);
-      console.log('Home (Server): Fetched contracts using cookie token.');
-    } catch (error) {
-      console.error('Home (Server): Error fetching data with cookie token:', error);
-      contracts = [];
-      username = 'Guest'; // Reset username if fetching fails
-    }
-  } else {
-    console.log('Home (Server): No auth token found in cookies. Data fetching skipped.');
-  }
-
+  // The rest of your component's JSX logic remains largely the same.
   return (
     <>
       {contracts.length < 1 ? (
         <>
-          <Banner users_name={username} /> {/* <--- Pass the dynamic username */}
+          <Banner users_name={displayUsername} /> {/* Pass the dynamic username */}
           <ContractUpload title='Upload a contract to get started' />
         </>
       ) : (
         <>
           <Heading
-            title='Your Dashboard'
+            title={`${displayUsername}'s Dashboard`}
             description='Here you can see a summary of up to 5 of your most recent contracts.'
           />
           <CardsGrid />
