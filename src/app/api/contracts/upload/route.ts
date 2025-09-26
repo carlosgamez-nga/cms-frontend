@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Server is misconfigured." }, { status: 500 });
   }
 
-  const djangoApiUrl = `${apiBaseUrl}/api/contracts/`;
+  const djangoApiUrl = `${apiBaseUrl}/api/contracts/upload/`;
   const formData = await request.formData();
 
   try {

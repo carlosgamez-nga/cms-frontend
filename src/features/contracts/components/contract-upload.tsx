@@ -7,248 +7,176 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import Spinner from '@/components/spinner';
-import { postContract } from '../queries/post-contract'; // Ensure this points to the simplified postContract function
+import { postContract } from '../queries/post-contract';
+import { finalizeContract } from '../queries/finalize-contract';
 
-type ContractUploadProps = {
-  title: string;
-};
+type ContractUploadProps = { title: string };
+type FormStep = 'UPLOAD' | 'CONFIRM_DATE';
 
-// This list of states remains the same.
+// --- STEP 1: Update the states array to be an array of objects ---
+// This allows us to show the full name but use the two-letter code as the value.
 const states = [
-  'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
-  'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho',
-  'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
-  'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
-  'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada',
-  'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina',
-  'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania',
-  'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas',
-  'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia',
-  'Wisconsin', 'Wyoming',
+  { name: 'Alabama', code: 'AL' }, { name: 'Alaska', code: 'AK' }, { name: 'Arizona', code: 'AZ' },
+  { name: 'Arkansas', code: 'AR' }, { name: 'California', code: 'CA' }, { name: 'Colorado', code: 'CO' },
+  { name: 'Connecticut', code: 'CT' }, { name: 'Delaware', code: 'DE' }, { name: 'Florida', code: 'FL' },
+  { name: 'Georgia', code: 'GA' }, { name: 'Hawaii', code: 'HI' }, { name: 'Idaho', code: 'ID' },
+  { name: 'Illinois', code: 'IL' }, { name: 'Indiana', code: 'IN' }, { name: 'Iowa', code: 'IA' },
+  { name: 'Kansas', code: 'KS' }, { name: 'Kentucky', code: 'KY' }, { name: 'Louisiana', code: 'LA' },
+  { name: 'Maine', code: 'ME' }, { name: 'Maryland', code: 'MD' }, { name: 'Massachusetts', code: 'MA' },
+  { name: 'Michigan', code: 'MI' }, { name: 'Minnesota', code: 'MN' }, { name: 'Mississippi', code: 'MS' },
+  { name: 'Missouri', code: 'MO' }, { name: 'Montana', code: 'MT' }, { name: 'Nebraska', code: 'NE' },
+  { name: 'Nevada', code: 'NV' }, { name: 'New Hampshire', code: 'NH' }, { name: 'New Jersey', code: 'NJ' },
+  { name: 'New Mexico', code: 'NM' }, { name: 'New York', code: 'NY' }, { name: 'North Carolina', code: 'NC' },
+  { name: 'North Dakota', code: 'ND' }, { name: 'Ohio', code: 'OH' }, { name: 'Oklahoma', code: 'OK' },
+  { name: 'Oregon', code: 'OR' }, { name: 'Pennsylvania', code: 'PA' }, { name: 'Rhode Island', code: 'RI' },
+  { name: 'South Carolina', code: 'SC' }, { name: 'South Dakota', code: 'SD' }, { name: 'Tennessee', code: 'TN' },
+  { name: 'Texas', code: 'TX' }, { name: 'Utah', code: 'UT' }, { name: 'Vermont', code: 'VT' },
+  { name: 'Virginia', code: 'VA' }, { name: 'Washington', code: 'WA' }, { name: 'West Virginia', code: 'WV' },
+  { name: 'Wisconsin', code: 'WI' }, { name: 'Wyoming', code: 'WY' }
 ] as const;
 
-// The Zod schema for form validation remains the same.
-const formSchema = z.object({
+// Helper to get just the state codes for Zod validation
+const stateCodes = states.map(s => s.code);
+// --- END STEP 1 ---
+
+const uploadFormSchema = z.object({
   title: z.string().min(1, 'Title is required.'),
-  description: z
-    .string()
-    .min(5, { message: 'The description must be at least 5 characters.' })
-    .max(160, { message: 'The description must not be longer than 160 characters.' }),
+  description: z.string().min(5, 'Description must be at least 5 characters.'),
   payer_name: z.string().min(1, 'Payer name is required.'),
-  state: z.enum(states),
-  file: z
-    .custom<File>((val) => val instanceof File, 'Must be a valid File')
-    .refine((file) => file !== null && file !== undefined, 'A file is required for upload.'),
+  // --- STEP 2: Update the Zod schema to validate against the two-letter codes ---
+  state: z.enum(stateCodes),
+  // --- END STEP 2 ---
+  file: z.custom<File>((val) => val instanceof File, 'Must be a valid File').refine((file) => file != null, 'A file is required.'),
+});
+
+const confirmationFormSchema = z.object({
+  effectiveDate: z.string().min(1, 'An effective date is required.'),
 });
 
 export default function ContractUpload({ title }: ContractUploadProps) {
+  // ... (All your state and handler functions remain exactly the same) ...
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
+  const [formStep, setFormStep] = useState<FormStep>('UPLOAD');
+  const [pendingData, setPendingData] = useState<{ id: number | null; date: string | null }>({ id: null, date: null });
   const router = useRouter();
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: '',
-      description: '',
-      payer_name: '',
-      state: undefined,
-      file: undefined,
-    },
-  });
-
-  // --- THIS IS THE MODIFIED FUNCTION ---
-  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+  const uploadForm = useForm<z.infer<typeof uploadFormSchema>>({ resolver: zodResolver(uploadFormSchema) });
+  const confirmationForm = useForm<z.infer<typeof confirmationFormSchema>>({ resolver: zodResolver(confirmationFormSchema) });
+  const handleInitialSubmit = async (values: z.infer<typeof uploadFormSchema>) => {
     setIsSubmitting(true);
-
-    // 1. Create a FormData object. This is the standard way to send files
-    //    and form data together in an HTTP request.
     const formData = new FormData();
-
-    // 2. Append all the form values to the FormData object.
-    //    The keys ('title', 'file', etc.) MUST match what your Django API view expects.
-    formData.append('title', values.title);
-    formData.append('description', values.description);
-    formData.append('payer_name', values.payer_name);
-    formData.append('state', values.state);
-    formData.append('file', values.file);
-
+    Object.entries(values).forEach(([key, value]) => {
+      formData.append(key, value as string | File);
+    });
     try {
-      // 3. Pass the FormData object directly to the simplified postContract function.
-      //    This function will send the data to your Next.js API route (/api/contracts/upload).
-      await postContract(formData);
-
-      toast.success('Contract submitted successfully!', { duration: 3000 });
-      setOpen(false); // Close the dialog on success
-      form.reset();   // Reset the form fields
-      router.refresh(); // This tells Next.js to re-fetch Server Component data, updating the contracts list
+      const response = await postContract(formData);
+      setPendingData({ id: response.id, date: response.extracted_effective_date_from_file });
+      confirmationForm.setValue('effectiveDate', response.extracted_effective_date_from_file || '');
+      setFormStep('CONFIRM_DATE');
     } catch (error: any) {
-      // The error message will come from our secure API route.
-      toast.error(error.message || 'Something went wrong. Please try again!', {
-        duration: 3000,
-      });
-      console.error('Submission error:', error);
+      toast.error(error.message || 'Something went wrong during upload.');
     } finally {
-      setIsSubmitting(false); // Ensure the submit button is re-enabled on success or failure
+      setIsSubmitting(false);
     }
   };
-  // --- END OF MODIFICATIONS ---
+  const handleFinalizeSubmit = async (values: z.infer<typeof confirmationFormSchema>) => {
+    if (!pendingData.id) {
+      toast.error('Cannot finalize: Missing contract ID.'); return;
+    }
+    setIsSubmitting(true);
+    try {
+      await finalizeContract({ contractId: pendingData.id, effectiveDate: values.effectiveDate });
+      toast.success('Contract finalized and saved successfully!');
+      setTimeout(() => { window.location.reload(); }, 1500);
+      resetAndClose();
+    } catch (error: any) {
+      toast.error(error.message || 'Something went wrong.');
+      setIsSubmitting(false);
+    }
+  };
+  const resetAndClose = () => {
+    setOpen(false);
+    setTimeout(() => { 
+      setFormStep('UPLOAD');
+      uploadForm.reset();
+      confirmationForm.reset();
+      setPendingData({ id: null, date: null });
+    }, 300);
+  };
+  // ...
 
   return (
-    <>
-      <div className='flex justify-between items-center mx-8 lg:w-[1024px] lg:mx-auto'>
-        <h5>{title}</h5>
+    <div className='flex justify-between items-center mx-8 lg:w-[1024px] lg:mx-auto'>
+      <h5>{title}</h5>
+      <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) resetAndClose(); else setOpen(true); }}>
+        <DialogTrigger asChild><Button>Upload contract</Button></DialogTrigger>
+        <DialogContent onInteractOutside={(e) => isSubmitting && e.preventDefault()}>
+          {formStep === 'UPLOAD' && (
+            <>
+              <DialogHeader className='mb-4'>
+                <DialogTitle>Upload a contract (Step 1 of 2)</DialogTitle>
+                <DialogDescription>Provide the contract details and file.</DialogDescription>
+              </DialogHeader>
+              <Form {...uploadForm}>
+                <form onSubmit={uploadForm.handleSubmit(handleInitialSubmit)} className='space-y-8'>
+                  {/* ... (other fields are the same) ... */}
+                  <FormField control={uploadForm.control} name='title' render={({ field }) => ( <FormItem><FormLabel>Title</FormLabel><FormControl><Input placeholder='Enter title' {...field} /></FormControl><FormMessage /></FormItem> )} />
+                  <FormField control={uploadForm.control} name='description' render={({ field }) => ( <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder='Write a little description...' className='resize-none' {...field} /></FormControl><FormMessage /></FormItem> )} />
+                  <FormField control={uploadForm.control} name='payer_name' render={({ field }) => ( <FormItem><FormLabel>Payer Name</FormLabel><FormControl><Input placeholder='Enter payer name' {...field} /></FormControl><FormMessage /></FormItem> )} />
+                  
+                  {/* --- STEP 3: Update the Select component in the JSX --- */}
+                  <FormField
+                    control={uploadForm.control}
+                    name='state'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>State</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder='Select your state' />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {/* Map over the array of objects now */}
+                            {states.map((state) => (
+                              // Use the code for the value, and the name for the display
+                              <SelectItem key={state.code} value={state.code}>
+                                {state.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {/* --- END STEP 3 --- */}
 
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button>Upload contract</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader className='mb-4'>
-              <DialogTitle>Upload a contract</DialogTitle>
-              <DialogDescription>Upload your contracts.</DialogDescription>
-            </DialogHeader>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(handleSubmit)}
-                className='space-y-8'
-                // The 'enctype' is not strictly needed here since we are using fetch with FormData,
-                // but it's good practice for native HTML forms with file uploads.
-                encType='multipart/form-data'
-              >
-                {/* All of the FormField components below remain unchanged. */}
-                <FormField
-                  control={form.control}
-                  name='title'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Title</FormLabel>
-                      <FormControl>
-                        <Input placeholder='Enter title' type='text' {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name='description'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder='Write a little description about your contract'
-                          className='resize-none'
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name='payer_name'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Payer Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder='Enter payer name' type='text' {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name='state'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>State</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder='Select your state' />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {states.map((state, i) => (
-                            <SelectItem key={i} value={state}>
-                              {state}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name='file'
-                  // We need to remove the "value" prop from the render part for file inputs
-                  render={({ field: { onChange, onBlur, name, ref } }) => (
-                    <FormItem>
-                      <FormLabel>File</FormLabel>
-                      <FormControl>
-                        <Input
-                          type='file'
-                          ref={ref}
-                          name={name}
-                          onBlur={onBlur}
-                          onChange={(e) => {
-                            if (e.target.files && e.target.files.length > 0) {
-                              onChange(e.target.files[0]);
-                            }
-                          }}
-                          className='border-dashed border-blue-500 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 file:border file:border-solid file:border-blue-700 file:rounded-md file:text-center file:px-2'
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <Button type='submit' disabled={isSubmitting}>
-                  {isSubmitting ? <Spinner /> : 'Submit'}
-                </Button>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
-      </div>
-    </>
+                  <FormField control={uploadForm.control} name='file' render={({ field: { onChange, onBlur, name, ref } }) => ( <FormItem><FormLabel>File</FormLabel><FormControl><Input type='file' ref={ref} name={name} onBlur={onBlur} onChange={(e) => onChange(e.target.files?.[0])} className='border-dashed border-blue-500 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 file:border file:border-solid file:border-blue-700 file:rounded-md file:text-center file:px-2' /></FormControl><FormMessage /></FormItem> )} />
+                  <Button type='submit' disabled={isSubmitting}>
+                    {isSubmitting ? <Spinner /> : 'Submit'}
+                  </Button>
+                </form>
+              </Form>
+            </>
+          )}
+          {/* ... (The confirmation form JSX remains the same) ... */}
+          {formStep === 'CONFIRM_DATE' && (
+             <>
+                <DialogHeader className='mb-4'><DialogTitle>Confirm Effective Date (Step 2 of 2)</DialogTitle><DialogDescription>{pendingData.date ? `We extracted the date below. Please confirm it's correct or enter the right one.` : `We couldn't find an effective date. Please enter it below.`}</DialogDescription></DialogHeader>
+                <Form {...confirmationForm}><form onSubmit={confirmationForm.handleSubmit(handleFinalizeSubmit)} className='space-y-8'><FormField control={confirmationForm.control} name='effectiveDate' render={({ field }) => ( <FormItem><FormLabel>Effective Date</FormLabel><FormControl><Input type='date' {...field} /></FormControl><FormMessage /></FormItem> )} /><div className='flex justify-between'><Button type='button' variant='outline' onClick={() => setFormStep('UPLOAD')} disabled={isSubmitting}>Back</Button><Button type='submit' disabled={isSubmitting}>{isSubmitting ? <Spinner /> : 'Confirm & Save Contract'}</Button></div></form></Form>
+             </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
