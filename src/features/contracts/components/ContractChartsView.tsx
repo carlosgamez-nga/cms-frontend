@@ -79,10 +79,35 @@ export default function ContractChartsView({ contract }: ContractChartsViewProps
         // Await both simultaneously for speed
         const [contractRes, cmsRes] = await Promise.all([contractRatesPromise, cmsPromise]);
 
+        const rawContractData = contractRes.data;
+        const cleanContractList = Array.isArray(rawContractData) 
+            ? rawContractData 
+            : rawContractData?.results || [];
+
+        console.log("------------------------------------------");
+        console.log("🏥 CMS DATA DEBUG:");
+        const rawCms = cmsRes.data;
+
+        if (Array.isArray(rawCms)) {
+            console.log(`✅ CMS is an Array with ${rawCms.length} items`);
+            if (rawCms.length > 0) {
+                console.log("🔍 First CMS Item:", rawCms[0]);
+                console.log("🔑 Keys:", Object.keys(rawCms[0]));
+            }
+        } else if (rawCms && rawCms.results) {
+            console.log("⚠️ CMS is Paginated! (Need to unwrap .results)");
+            console.log("Results count:", rawCms.results.length);
+        } else {
+            console.log("❌ CMS Data is empty or invalid:", rawCms);
+        }
+        console.log("------------------------------------------");
+
         if (contractRes.error) throw new Error(contractRes.error);
         if (cmsRes.error) throw new Error(cmsRes.error);
 
-        setContractRates(contractRes.data || []);
+        // 3. SET STATE WITH CLEAN LIST
+        // Now your chart will get the Array it expects, not the pagination Object
+        setContractRates(cleanContractList); 
         setCmsData(cmsRes.data || []);
         toast.success('CMS comparison generated!');
 
@@ -183,7 +208,7 @@ export default function ContractChartsView({ contract }: ContractChartsViewProps
               cmsData={cmsData}
               submittedCodes={submittedCodes}
               // Pass the extracted rates here
-              contractRates={contractRates} 
+              analysisData={contractRates} 
             />
           )}
         </TabsContent>
@@ -196,7 +221,7 @@ export default function ContractChartsView({ contract }: ContractChartsViewProps
               payerPriceData={payerPriceData}
               submittedCodes={submittedCodes}
               // Pass the extracted rates here
-              contractRates={contractRates}
+              analysisData={contractRates}
             />
           )}
         </TabsContent>
