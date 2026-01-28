@@ -11,13 +11,12 @@ import Spinner from '@/components/spinner';
 
 import CMSDataChart from '@/features/charts/components/cms-data-chart';
 import PayerPriceDataChart from '@/features/charts/components/payer-price-data-chart';
-import NewContractDataChart from '@/features/charts/components/new-contract-data-chart';
 
-// Import ALL THREE Server Actions
+// Import Server Actions
 import { 
   fetchChartDataAction, 
   fetchPayerPriceAction,
-  fetchNewContractAnalysisAction 
+  fetchContractRatesAction // The new Django fetcher
 } from '../actions';
 
 interface ContractChartsViewProps {
@@ -31,25 +30,30 @@ export default function ContractChartsView({ contract }: ContractChartsViewProps
   const [activeTab, setActiveTab] = useState('cms-analysis');
   const [submittedCodes, setSubmittedCodes] = useState<string[]>([]);
   
-  // State for each data source
+  // Data States
   const [cmsData, setCmsData] = useState<any[] | null>(null);
   const [payerPriceData, setPayerPriceData] = useState<any | null>(null);
-  const [newContractData, setNewContractData] = useState<any[] | null>(null);
+  
+  // This holds the actuals from your Django DB
+  const [contractRates, setContractRates] = useState<any[] | null>(null);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const codes = cptInput.split(',').map(code => code.trim()).filter(Boolean);
+    
     if (codes.length === 0 || codes.length > 10) {
       setError(codes.length === 0 ? 'Please enter at least one CPT code.' : 'You may only request up to 10 CPT codes.');
       return;
     }
-    // Reset all data on a new submission
+
+    // Reset State
     setError(null);
     setCmsData(null);
     setPayerPriceData(null);
-    setNewContractData(null);
+    setContractRates(null); 
     setSubmittedCodes(codes);
-    // Fetch data for the currently active tab
+    
+    // Fetch data for the active tab immediately
     fetchDataForTab(activeTab, codes);
   };
 
@@ -59,39 +63,61 @@ export default function ContractChartsView({ contract }: ContractChartsViewProps
     setError(null);
 
     try {
+      // 1. Always fetch the Contract Rates (The "Actuals")
+      // We do this in parallel with the benchmark data using Promise.all
+      const contractRatesPromise = fetchContractRatesAction(contract.id, codes);
+
       if (tab === 'cms-analysis') {
-        const params = { year: contract.year || '2025', carrier_number: contract.carrier_number || '00000', locality: contract.locality || '00', hcpcs_codes: codes };
-        const result = await fetchChartDataAction(params);
-        if (result.error) throw new Error(result.error);
-        setCmsData(result.data || []);
-        toast.success('CMS analysis generated!');
+        const params = { 
+            year: contract.year || '2025', 
+            carrier_number: contract.carrier_number || '00000', 
+            locality: contract.locality || '00', 
+            hcpcs_codes: codes 
+        };
+        const cmsPromise = fetchChartDataAction(params);
+
+        // Await both simultaneously for speed
+        const [contractRes, cmsRes] = await Promise.all([contractRatesPromise, cmsPromise]);
+
+        if (contractRes.error) throw new Error(contractRes.error);
+        if (cmsRes.error) throw new Error(cmsRes.error);
+
+        setContractRates(contractRes.data || []);
+        setCmsData(cmsRes.data || []);
+        toast.success('CMS comparison generated!');
+
       } else if (tab === 'payer-price-analysis') {
         const payerApiValueMap: { [key: string]: string } = { 'UHC': 'United' };
         const payerApiValue = payerApiValueMap[contract.payer_name] || contract.payer_name;
+        
         const params = {
-          benchmarkType: "marketOverview", payers: [{ value: payerApiValue, title: "", grouping: null }], states: [contract.state],
+          benchmarkType: "marketOverview", 
+          payers: [{ value: payerApiValue, title: "", grouping: null }], 
+          states: [contract.state],
           billingCodeAndTypes: codes.map(c => ({ value: { code: c, type: "CPT" }, title: "", grouping: null, description: null })),
-          taxonomies: [{ value: "208D00000X", title: "", grouping: null }], serviceCodes: [{ value: "11", title: "", grouping: null }],
+          taxonomies: [{ value: "208D00000X", title: "", grouping: null }], 
+          serviceCodes: [{ value: "11", title: "", grouping: null }],
           yearMonths: [{ value: { year: 2025, month: 6 }, title: "", grouping: null }],
           counties: null, billingCodeModifiers: null, billingClasses: null, entityTypes: null, includeIndirectNpis: false, negotiatedTypes: null,
         };
-        const result = await fetchPayerPriceAction(params);
-        if (result.error) throw new Error(result.error);
-        setPayerPriceData(result.data);
-        toast.success('Payer Price analysis generated!');
-      } else if (tab === 'new-contract-analysis') {
-        const params = {
-            baseline_id: 'ad1cffa2367a58b44a8adebd9dd00e9a', // Hardcoded for now
-            cpt_codes: codes,
-        };
-        const result = await fetchNewContractAnalysisAction(params);
-        if (result.error) throw new Error(result.error);
-        setNewContractData(result.data || []);
-        toast.success('New Contract analysis generated!');
+
+        const payerPromise = fetchPayerPriceAction(params);
+
+        // Await both
+        const [contractRes, payerRes] = await Promise.all([contractRatesPromise, payerPromise]);
+
+        if (contractRes.error) throw new Error(contractRes.error);
+        if (payerRes.error) throw new Error(payerRes.error);
+
+        setContractRates(contractRes.data || []);
+        setPayerPriceData(payerRes.data);
+        toast.success('Payer Price comparison generated!');
       }
+
     } catch (err: any) {
-      setError(err.message);
-      toast.error(err.message);
+      console.error(err);
+      setError(err.message || "An error occurred fetching data");
+      toast.error(err.message || "An error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -99,7 +125,7 @@ export default function ContractChartsView({ contract }: ContractChartsViewProps
 
   return (
     <div className='space-y-6'>
-      {/* CPT Code Input Form */}
+      {/* Input Form */}
       <div className='p-6 border rounded-lg bg-card text-card-foreground shadow-sm'>
         <form onSubmit={handleSubmit} className='space-y-4'>
           <div className='space-y-1.5'>
@@ -107,7 +133,7 @@ export default function ContractChartsView({ contract }: ContractChartsViewProps
               Enter up to 10 CPT Codes for Analysis
             </Label>
             <p className='text-sm text-muted-foreground'>
-              Separate codes with a comma (,).
+              Compare your extracted contract rates against CMS and Market benchmarks.
             </p>
           </div>
           <div className='flex flex-col sm:flex-row w-full items-center gap-2'>
@@ -120,35 +146,33 @@ export default function ContractChartsView({ contract }: ContractChartsViewProps
               className='flex-grow'
             />
             <Button type='submit' disabled={isLoading} className='w-full sm:w-auto'>
-              {isLoading ? <Spinner /> : 'Generate Analysis'}
+              {isLoading ? <Spinner /> : 'Compare Rates'}
             </Button>
           </div>
           {error && <p className='text-sm font-medium text-destructive'>{error}</p>}
         </form>
       </div>
 
-      {/* Tabs and Charts */}
+      {/* Tabs - Reduced to 2 */}
       {submittedCodes.length > 0 && (
         <Tabs
           value={activeTab}
           onValueChange={(newTab) => {
             setActiveTab(newTab);
-            if (submittedCodes.length > 0) { // Ensure codes have been submitted before fetching
+            // Refetch if we switch tabs and don't have the specific benchmark data yet
+            if (submittedCodes.length > 0) {
                 if (newTab === 'cms-analysis' && !cmsData) {
                     fetchDataForTab(newTab, submittedCodes);
                 } else if (newTab === 'payer-price-analysis' && !payerPriceData) {
-                    fetchDataForTab(newTab, submittedCodes);
-                } else if (newTab === 'new-contract-analysis' && !newContractData) {
                     fetchDataForTab(newTab, submittedCodes);
                 }
             }
           }}
           className="w-full"
         >
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="cms-analysis">CMS vs Current</TabsTrigger>
-            <TabsTrigger value="payer-price-analysis">Payer Price vs Current</TabsTrigger>
-            <TabsTrigger value="new-contract-analysis">New Contract vs Current</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="cms-analysis">CMS vs Contract</TabsTrigger>
+            <TabsTrigger value="payer-price-analysis">Payer Price vs Contract</TabsTrigger>
           </TabsList>
 
         <TabsContent value="cms-analysis" className='mt-6'>
@@ -158,9 +182,8 @@ export default function ContractChartsView({ contract }: ContractChartsViewProps
               contractData={contract}
               cmsData={cmsData}
               submittedCodes={submittedCodes}
-              // --- ADD THIS PROP ---
-              // Pass the analysis data to the CMS chart
-              analysisData={newContractData} 
+              // Pass the extracted rates here
+              contractRates={contractRates} 
             />
           )}
         </TabsContent>
@@ -172,20 +195,8 @@ export default function ContractChartsView({ contract }: ContractChartsViewProps
               contractData={contract}
               payerPriceData={payerPriceData}
               submittedCodes={submittedCodes}
-              // --- ADD THIS PROP ---
-              // Pass the analysis data to the Payer Price chart
-              analysisData={newContractData}
-            />
-          )}
-        </TabsContent>
-        
-        <TabsContent value="new-contract-analysis" className='mt-6'>
-          {(isLoading && activeTab === 'new-contract-analysis') && <Spinner />}
-          {newContractData && (
-            <NewContractDataChart
-              contractData={contract}
-              analysisData={newContractData}
-              submittedCodes={submittedCodes}
+              // Pass the extracted rates here
+              contractRates={contractRates}
             />
           )}
         </TabsContent>

@@ -2,13 +2,11 @@
 
 import { getAuthToken } from '@/lib/auth';
 
-// Import the server-side query function and types for the CMS data call
 import { getCmsDataForCodes, CmsDataRequestParams } from '@/features/cpt-codes/queries/get-codes.server';
-
-// Import the server-side query function and types for the Payer Price data call
 import { getPayerPriceDataOnServer, PayerPriceRequestParams } from '@/features/charts/queries/get-payer-price-data.server';
-
 import { getNewContractAnalysisData, NewContractAnalysisParams } from '@/features/charts/queries/get-new-contract-analysis.server';
+import { getCurrentContractData, GetCurrentContractDataParams } from '@/features/charts/queries/get-current-contract-data.server';
+
 
 
 // ===================================================================
@@ -21,7 +19,6 @@ import { getNewContractAnalysisData, NewContractAnalysisParams } from '@/feature
  * @returns An object with either the fetched 'data' or an 'error' message.
  */
 export const fetchChartDataAction = async (params: CmsDataRequestParams) => {
-  // Server Actions can directly check for authentication.
   const token = await getAuthToken();
   if (!token) {
     return { error: 'Authentication required. Please log in.' };
@@ -29,7 +26,6 @@ export const fetchChartDataAction = async (params: CmsDataRequestParams) => {
 
   try {
     const cmsData = await getCmsDataForCodes(params);
-    // The query function already handles errors and returns an array.
     return { data: cmsData };
   } catch (error: any) {
     console.error('Error in fetchChartDataAction:', error);
@@ -80,3 +76,22 @@ export const fetchNewContractAnalysisAction = async (params: NewContractAnalysis
     return { error: error.message || 'An unexpected error occurred.' };
   }
 };
+
+
+export async function fetchContractRatesAction(contractId: number, cptCodes: string[]) {
+  // Authentication is now handled within getAuthenticatedHeaders called by getCurrentContractData
+  // but you can keep a direct check here for quick fail if needed.
+  const token = await getAuthToken(); // Or directly use getAuthenticatedHeaders as in the query
+  if (!token) {
+    return { error: 'Authentication required. Please log in.' };
+  }
+
+  try {
+    const params: GetCurrentContractDataParams = { contractId, cptCodes };
+    const data = await getCurrentContractData(params);
+    return { data };
+  } catch (error: any) {
+    console.error('Error in fetchContractRatesAction:', error);
+    return { error: error.message || 'An unexpected error occurred while fetching contract rates.' };
+  }
+}

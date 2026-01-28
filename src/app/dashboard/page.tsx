@@ -42,7 +42,7 @@ export default async function Home() {
             title={`${displayUsername}'s Dashboard`}
             description='Here you can see a summary of up to 5 of your most recent contracts.'
           />
-          <CardsGrid />
+          {/*<CardsGrid */}
           <div className='grid grid-cols-1 xl:grid-cols-2 md:gap-x-10 mt-8 gap-y-4'>
             <RecentContracts contracts={contracts} />
             <ContractsRevenue />
