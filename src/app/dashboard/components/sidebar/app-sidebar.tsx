@@ -3,6 +3,7 @@
 import {
   PanelsTopLeft,
   FileText,
+  Activity,
   UserRound,
   ChevronUp,
   Settings,
@@ -46,6 +47,11 @@ const items = [
     title: 'Contracts',
     url: '/dashboard/contracts',
     icon: FileText,
+  },
+  {
+    title: 'Payer Price Test',
+    url: '/dashboard/payer-price-test',
+    icon: Activity,
   },
 ];
 

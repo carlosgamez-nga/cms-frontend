@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import {
   Bar,
   BarChart,
@@ -29,9 +28,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-
-import { getCMSData } from '../queries/get-cms-data';
-import { getCurrentContractData } from '../queries/get-current-contract-data';
+import { ChartDatum } from '../types';
 
 // Custom legend content
 const ChartLegendContent = () => (
@@ -79,66 +76,25 @@ const ChartTooltipContent = ({
   );
 };
 
-type ChartDatum = {
-  code: string;
-  current_contract: number;
-  cms: number;
-  currentContractFill: string;
-};
+interface CMSDataChartProps {
+  data: ChartDatum[];
+}
 
-const CMSDataChart = () => {
-  const [chartData, setChartData] = useState<ChartDatum[]>([]);
-
-  useEffect(() => {
-    const loadData = async () => {
-      const current = await getCurrentContractData();
-      const cms = await getCMSData();
-
-      const currentMap = Object.fromEntries(
-        current.cpt_prices.map(({ cpt_code, price }) => [cpt_code, price])
-      );
-
-      const cmsMap = Object.fromEntries(
-        cms.cpt_prices.map(({ cpt_code, price }) => [cpt_code, price])
-      );
-
-      const merged = Object.keys(currentMap).map((code) => {
-        const currentPrice = currentMap[code];
-        const cmsPrice = cmsMap[code];
-
-        return {
-          code,
-          current_contract: currentPrice,
-          cms: cmsPrice,
-          currentContractFill:
-            currentPrice > cmsPrice
-              ? '#16a34a'
-              : currentPrice < cmsPrice
-              ? '#dc2626'
-              : '#8EC6FF',
-        };
-      });
-
-      setChartData(merged);
-    };
-
-    loadData();
-  }, []);
-
+const CMSDataChart = ({ data }: CMSDataChartProps) => {
   const chartConfig: ChartConfig = {
     current_contract: { label: 'Current Contract', color: '#8EC6FF' },
     cms: { label: 'CMS', color: '#2662D9' },
   };
 
   return (
-    <Card className='bg-primary-foreground'>
+    <Card className='bg-primary-foreground flex-1'>
       <CardHeader>
         <CardTitle>CMS vs Current Contract</CardTitle>
         <CardDescription>Comparison by CPT code</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <BarChart accessibilityLayer data={chartData}>
+          <BarChart accessibilityLayer data={data}>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey='code'
@@ -151,7 +107,7 @@ const CMSDataChart = () => {
             <ChartLegend content={<ChartLegendContent />} />
             <Bar dataKey='cms' fill='#2662D9' radius={4} />
             <Bar dataKey='current_contract' radius={4}>
-              {chartData.map((entry, index) => (
+              {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.currentContractFill} />
               ))}
             </Bar>
@@ -163,7 +119,7 @@ const CMSDataChart = () => {
           Price comparison with CMS <PiTrendUp className='h-4 w-4' />
         </div>
         <div className='leading-none text-muted-foreground'>
-          Showing {chartData.length} CPT codes per comparison
+          Showing {data.length} CPT codes per comparison
         </div>
       </CardFooter>
     </Card>

@@ -9,6 +9,16 @@
       "effective_date": "2025-06-25T14:00:00Z",
       "uploaded_at": "2025-06-25T14:00:00Z",
       "file": "http://127.0.0.1:8000/media/contracts/Digestive_Health_UHC_Georgia.pdf"
+    },
+    {
+      "id": 123,
+      "title": "Test Contract 123",
+      "description": "Mock contract for testing",
+      "payer_name": "Test Payer",
+      "state": "California",
+      "effective_date": "2025-01-01T10:00:00Z",
+      "uploaded_at": "2025-01-01T10:00:00Z",
+      "file": ""
     }
   ],
   "cpt_codes": [

@@ -25,7 +25,7 @@ export const getContracts = async (): Promise<Contract[]> => {
 // Modify getContract to accept authToken
 export const getContract = async (contractId: string, authToken?: string): Promise<Contract | null> => { // <-- ADD authToken PARAMETER
   try {
-    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000';
 
     if (!API_BASE_URL) {
       throw new Error("API base URL is not configured for getContract.");
@@ -65,7 +65,20 @@ export const getContract = async (contractId: string, authToken?: string): Promi
 
   } catch (error) {
     console.error(`Error in getContract for ID ${contractId}:`, error);
-    return null; // Return null on error
+    // return null; // Return null on error
+
+    // MOCK DATA FALLBACK
+    console.warn('Returning MOCK contract data due to error');
+    return {
+      id: Number(contractId),
+      title: 'Mock Contract',
+      description: 'This is a mock contract for testing.',
+      payer_name: 'Mock Payer',
+      state: 'TX',
+      effective_date: '2024-01-01',
+      file: null as any,
+      uploaded_at: new Date().toISOString(),
+    } as Contract;
   }
 };
 
@@ -73,7 +86,7 @@ export const getContract = async (contractId: string, authToken?: string): Promi
 
 export const fetchUserContracts = async (authToken?: string): Promise<Contract[]> => { // <-- ADD authToken PARAMETER
   try {
-    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000';
 
     if (!API_BASE_URL) {
       throw new Error("API base URL is not configured for fetchUserContracts.");
@@ -109,13 +122,15 @@ export const fetchUserContracts = async (authToken?: string): Promise<Contract[]
     const apiResponse = await res.json();
     //console.log('Raw API Response (fetchUserContracts):', apiResponse);
 
-    // Assuming your API returns { results: [...] }
-    if (!apiResponse || !Array.isArray(apiResponse.results)) {
-        console.error('API response did not contain a valid results array:', apiResponse);
-        return []; // Return empty array if structure is unexpected
+    // Verify structure (support both { results: [...] } and direct array for mocks)
+    const contracts = Array.isArray(apiResponse) ? apiResponse : apiResponse.results;
+
+    if (!Array.isArray(contracts)) {
+      console.error('API response did not contain a valid results array:', apiResponse);
+      return []; // Return empty array if structure is unexpected
     }
-    console.log('Extracting results array:', apiResponse.results);
-    return apiResponse.results;
+    console.log('Extracting results array:', contracts);
+    return contracts;
 
   } catch (error) {
     console.error('Error in fetchUserContracts:', error);
