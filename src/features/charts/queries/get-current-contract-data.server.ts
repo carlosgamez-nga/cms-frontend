@@ -1,55 +1,68 @@
 'use server';
 
-// NOTICE: No import from '@/lib/auth' here!
+// Use Next.js native cookies to get the auth token
+import { cookies } from 'next/headers';
+
+// If you are using a custom auth setup or NextAuth, you might import it like this instead:
+// import { getAuthToken } from '@/lib/auth';
 
 export interface GetCurrentContractDataParams {
   contractId: number;
   cptCodes: string[];
 }
 
-export const getCurrentContractData = async (params: GetCurrentContractDataParams): Promise<any[]> => {
-  console.log("\n🛑 🛑 SANITY CHECK: RUNNING HARDCODED VERSION 🛑 🛑");
+export interface ContractRateResponse {
+  cpt_code: string;
+  rate: string | number;
+}
 
-  // 1. USE THE TOKEN THAT WORKED IN CURL
-  const TEST_TOKEN = "cfbc6e83dc2dcdd80e38d0a8c38fbf60b574f88f";
+export const getCurrentContractData = async (params: GetCurrentContractDataParams): Promise<ContractRateResponse[]> => {
+  // 1. PULL THE REAL AUTH TOKEN
+  // Adjust 'auth_token' to match whatever you named your cookie when the user logged in.
+  const cookieStore = await cookies();
+  const token =  cookieStore.get('authToken')?.value; 
 
-  // 2. FORCE THE URL (Assume localhost:8000 for Django)
-  // We manually verify the trailing slash structure
-  const baseUrl = "http://127.0.0.1:8000"; 
+  if (!token) {
+    throw new Error("Unauthorized: No authentication token found.");
+  }
+
+  // 2. SET UP THE URL
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"; 
   const endpoint = `/api/contracts/${params.contractId}/rates/`; 
-  const query = `?codes=${params.cptCodes.join(',')}`;
-  
-  const fullUrl = `${baseUrl}${endpoint}${query}`;
-
-  console.log(`📡 URL: ${fullUrl}`);
-  console.log(`🔑 HEADER: Token ${TEST_TOKEN.substring(0, 10)}...`);
+  const fullUrl = `${baseUrl}${endpoint}`;
 
   try {
     const res = await fetch(fullUrl, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        // DIRECT STRING - No helper functions
-        'Authorization': `Token ${TEST_TOKEN}`
+        'Authorization': `Token ${token}` // Injecting the real logged-in token
       },
-      cache: 'no-store', // Disable Next.js Cache
-      next: { revalidate: 0 }
+      cache: 'no-store', 
     });
-
-    console.log(`⬅️ STATUS: ${res.status} ${res.statusText}`);
 
     if (!res.ok) {
       const text = await res.text();
-      console.error(`❌ ERROR BODY: ${text}`);
-      throw new Error(text);
+      console.error(`❌ ERROR FETCHING RATES: ${res.status} ${res.statusText} - ${text}`);
+      throw new Error(`Failed to fetch contract data: ${res.statusText}`);
     }
 
     const json = await res.json();
-    console.log(`✅ SUCCESS! Got ${json.results?.length || json.length} items`);
-    return json;
+    
+    // Handle both flat arrays and paginated DRF responses
+    const allRates: ContractRateResponse[] = Array.isArray(json) ? json : (json.results || []);
+    console.log(allRates);
+    
+    // 3. FILTER DOWN TO REQUESTED CPT CODES
+    const filteredRates = allRates.filter((rateObj) => 
+      params.cptCodes.includes(rateObj.cpt_code)
+    );
+    console.log(filteredRates)
+
+    return filteredRates;
 
   } catch (error) {
-    console.error("💥 CRASH:", error);
+    console.error("💥 CRASH IN getCurrentContractData:", error);
     throw error;
   }
 };

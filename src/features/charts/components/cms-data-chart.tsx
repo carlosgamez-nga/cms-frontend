@@ -39,7 +39,7 @@ const CMSDataChart = ({ contractData, cmsData, submittedCodes, analysisData }: C
       
       // Use the "contract_rate" from the new analysisData prop
       const contractRateMap = new Map<string, number>(
-        analysisData.map(item => [item.cpt_code, parseFloat(item.contract_rate)])
+        analysisData.map(item => [item.cpt_code, parseFloat(item.rate)])
       );
       
       const merged = submittedCodes.map((code) => {
