@@ -15,6 +15,23 @@ interface PayerPriceDataTableProps {
   rows: PayerPriceApiRow[];
 }
 
+const marketRateColumns = [
+  { label: 'CPT Code', keys: ['cpt_code', 'cpt', 'billing_code'] },
+  { label: 'Median Price', keys: ['median_price'] },
+  { label: '25th Percentile', keys: ['percentile_rate_25', 'percentile_25'] },
+  { label: '50th Percentile', keys: ['percentile_rate_50', 'percentile_50'] },
+] as const;
+
+const getValueByKeys = (
+  row: PayerPriceApiRow,
+  keys: readonly string[]
+): string | number | boolean | null | undefined => {
+  for (const key of keys) {
+    if (key in row) return row[key];
+  }
+  return '';
+};
+
 const PayerPriceDataTable = ({ rows }: PayerPriceDataTableProps) => {
   if (!rows.length) {
     return (
@@ -29,8 +46,6 @@ const PayerPriceDataTable = ({ rows }: PayerPriceDataTableProps) => {
     );
   }
 
-  const columns = Array.from(new Set(rows.flatMap((row) => Object.keys(row))));
-
   return (
     <Card className='w-full'>
       <CardHeader>
@@ -41,17 +56,17 @@ const PayerPriceDataTable = ({ rows }: PayerPriceDataTableProps) => {
           <Table>
             <TableHeader>
               <TableRow>
-                {columns.map((column) => (
-                  <TableHead key={column}>{column}</TableHead>
+                {marketRateColumns.map((column) => (
+                  <TableHead key={column.label}>{column.label}</TableHead>
                 ))}
               </TableRow>
             </TableHeader>
             <TableBody>
               {rows.map((row, rowIndex) => (
                 <TableRow key={rowIndex}>
-                  {columns.map((column) => (
-                    <TableCell key={`${rowIndex}-${column}`}>
-                      {String(row[column] ?? '')}
+                  {marketRateColumns.map((column) => (
+                    <TableCell key={`${rowIndex}-${column.label}`}>
+                      {String(getValueByKeys(row, column.keys) ?? '')}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -65,4 +80,3 @@ const PayerPriceDataTable = ({ rows }: PayerPriceDataTableProps) => {
 };
 
 export default PayerPriceDataTable;
-

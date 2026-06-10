@@ -2,6 +2,7 @@
 'use client';
 
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -31,13 +32,18 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[]; // This `data` prop should be the array of contracts
   isDashboard?: boolean;
+  fullWidth?: boolean;
+  getRowHref?: (row: TData) => string | null;
 }
 
 const DataTable = <TData, TValue>({
   columns,
   data, // The array of contracts from ContractList
   isDashboard = false,
+  fullWidth = false,
+  getRowHref,
 }: DataTableProps<TData, TValue>) => {
+  const router = useRouter();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -93,7 +99,10 @@ const DataTable = <TData, TValue>({
   }
 
   return (
-    <div className='p-4 border bg-background shadow-sm rounded-lg mt-4 md:w-full lg:max-w-[1024px] lg:mx-auto '>
+    <div
+      className={`p-4 border bg-background shadow-sm rounded-lg mt-4 md:w-full ${fullWidth ? '' : 'lg:max-w-[1024px] lg:mx-auto'
+        }`}
+    >
       {!isDashboard && (
         <div className='flex items-center py-4'>
           <Label
@@ -140,6 +149,16 @@ const DataTable = <TData, TValue>({
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && 'selected'}
+                    className={
+                      getRowHref && getRowHref(row.original)
+                        ? 'hover:bg-gray-50 cursor-pointer'
+                        : undefined
+                    }
+                    onClick={() => {
+                      if (!getRowHref) return;
+                      const href = getRowHref(row.original);
+                      if (href) router.push(href);
+                    }}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell

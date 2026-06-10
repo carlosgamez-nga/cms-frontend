@@ -7,6 +7,96 @@
       "payer_name": "UHC",
       "state": "Georgia",
       "effective_date": "2025-06-25T14:00:00Z",
+      "expiration_date": "2026-05-20",
+      "status": "Active",
+      "cpt_codes": 47,
+      "market_rate": 850,
+      "contract_rate": 790,
+      "variance_vs_market": -7.06,
+      "rates": [
+        {
+          "cpt": "45378",
+          "description": "Diagnostic Colonoscopy",
+          "market_rate": 1225,
+          "contract_rate": 1160
+        },
+        {
+          "cpt": "99213",
+          "description": "Office Visit",
+          "market_rate": 95,
+          "contract_rate": 89
+        },
+        {
+          "cpt": "43239",
+          "description": "Upper GI Endoscopy",
+          "market_rate": 890,
+          "contract_rate": 835
+        },
+        {
+          "cpt": "80053",
+          "description": "Comprehensive Metabolic Panel",
+          "market_rate": 86,
+          "contract_rate": 79
+        },
+        {
+          "cpt": "74177",
+          "description": "CT Abdomen and Pelvis",
+          "market_rate": 980,
+          "contract_rate": 915
+        }
+      ],
+      "benchmark_rates": [
+        {
+          "cpt": "45378",
+          "billing_class": "Facility",
+          "modifiers": "26",
+          "negotiated_type": "Per Case",
+          "median_price": 1225,
+          "percentile_25": 1105,
+          "percentile_50": 1225,
+          "contract_rate": 1160
+        },
+        {
+          "cpt": "99213",
+          "billing_class": "Professional",
+          "modifiers": "25",
+          "negotiated_type": "Percent of Medicare",
+          "median_price": 95,
+          "percentile_25": 85,
+          "percentile_50": 95,
+          "contract_rate": 89
+        },
+        {
+          "cpt": "43239",
+          "billing_class": "Facility",
+          "modifiers": "",
+          "negotiated_type": "Per Case",
+          "median_price": 890,
+          "percentile_25": 810,
+          "percentile_50": 890,
+          "contract_rate": 835
+        },
+        {
+          "cpt": "80053",
+          "billing_class": "Professional",
+          "modifiers": "QW",
+          "negotiated_type": "Percent of Medicare",
+          "median_price": 86,
+          "percentile_25": 76,
+          "percentile_50": 86,
+          "contract_rate": 79
+        },
+        {
+          "cpt": "74177",
+          "billing_class": "Facility",
+          "modifiers": "TC",
+          "negotiated_type": "Per Case",
+          "median_price": 980,
+          "percentile_25": 890,
+          "percentile_50": 980,
+          "contract_rate": 915
+        }
+      ],
       "uploaded_at": "2025-06-25T14:00:00Z",
       "file": "http://127.0.0.1:8000/media/contracts/Digestive_Health_UHC_Georgia.pdf"
     },
@@ -17,7 +107,397 @@
       "payer_name": "Test Payer",
       "state": "California",
       "effective_date": "2025-01-01T10:00:00Z",
+      "expiration_date": "2026-04-25",
+      "status": "Draft",
+      "cpt_codes": 29,
+      "market_rate": 700,
+      "contract_rate": 680,
+      "variance_vs_market": -2.86,
+      "rates": [
+        {
+          "cpt": "99213",
+          "description": "Office Visit",
+          "market_rate": 95,
+          "contract_rate": 90
+        },
+        {
+          "cpt": "99214",
+          "description": "Office Visit Extended",
+          "market_rate": 120,
+          "contract_rate": 112
+        },
+        {
+          "cpt": "70553",
+          "description": "MRI Brain with and without contrast",
+          "market_rate": 980,
+          "contract_rate": 945
+        },
+        {
+          "cpt": "80061",
+          "description": "Lipid Panel",
+          "market_rate": 62,
+          "contract_rate": 59
+        },
+        {
+          "cpt": "29881",
+          "description": "Arthroscopic Meniscectomy",
+          "market_rate": 2560,
+          "contract_rate": 2460
+        }
+      ],
+      "benchmark_rates": [
+        {
+          "cpt": "99213",
+          "billing_class": "Professional",
+          "modifiers": "25",
+          "negotiated_type": "Percent of Medicare",
+          "median_price": 95,
+          "percentile_25": 86,
+          "percentile_50": 95,
+          "contract_rate": 90
+        },
+        {
+          "cpt": "99214",
+          "billing_class": "Professional",
+          "modifiers": "",
+          "negotiated_type": "Percent of Medicare",
+          "median_price": 120,
+          "percentile_25": 110,
+          "percentile_50": 120,
+          "contract_rate": 112
+        },
+        {
+          "cpt": "70553",
+          "billing_class": "Facility",
+          "modifiers": "TC",
+          "negotiated_type": "Per Case",
+          "median_price": 980,
+          "percentile_25": 905,
+          "percentile_50": 980,
+          "contract_rate": 945
+        },
+        {
+          "cpt": "80061",
+          "billing_class": "Professional",
+          "modifiers": "QW",
+          "negotiated_type": "Percent of Medicare",
+          "median_price": 62,
+          "percentile_25": 56,
+          "percentile_50": 62,
+          "contract_rate": 59
+        },
+        {
+          "cpt": "29881",
+          "billing_class": "Facility",
+          "modifiers": "",
+          "negotiated_type": "Per Case",
+          "median_price": 2560,
+          "percentile_25": 2400,
+          "percentile_50": 2560,
+          "contract_rate": 2460
+        }
+      ],
       "uploaded_at": "2025-01-01T10:00:00Z",
+      "file": ""
+    },
+    {
+      "id": 200,
+      "title": "North Metro Outpatient PPO",
+      "description": "Mock outpatient reimbursement contract",
+      "payer_name": "Aetna",
+      "state": "Texas",
+      "effective_date": "2025-02-15T10:00:00Z",
+      "expiration_date": "2026-06-01",
+      "status": "Pending Renewal",
+      "cpt_codes": 63,
+      "market_rate": 920,
+      "contract_rate": 885,
+      "variance_vs_market": -3.8,
+      "rates": [
+        {
+          "cpt": "72148",
+          "description": "MRI Lumbar Spine",
+          "market_rate": 995,
+          "contract_rate": 948
+        },
+        {
+          "cpt": "99203",
+          "description": "New Office Visit",
+          "market_rate": 152,
+          "contract_rate": 147
+        },
+        {
+          "cpt": "27447",
+          "description": "Total Knee Arthroplasty",
+          "market_rate": 2810,
+          "contract_rate": 2690
+        },
+        {
+          "cpt": "85025",
+          "description": "Complete Blood Count",
+          "market_rate": 58,
+          "contract_rate": 56
+        },
+        {
+          "cpt": "74183",
+          "description": "MRI Abdomen with contrast",
+          "market_rate": 1120,
+          "contract_rate": 1065
+        }
+      ],
+      "benchmark_rates": [
+        {
+          "cpt": "72148",
+          "billing_class": "Facility",
+          "modifiers": "TC",
+          "negotiated_type": "Per Case",
+          "median_price": 995,
+          "percentile_25": 915,
+          "percentile_50": 995,
+          "contract_rate": 948
+        },
+        {
+          "cpt": "99203",
+          "billing_class": "Professional",
+          "modifiers": "25",
+          "negotiated_type": "Percent of Medicare",
+          "median_price": 152,
+          "percentile_25": 141,
+          "percentile_50": 152,
+          "contract_rate": 147
+        },
+        {
+          "cpt": "27447",
+          "billing_class": "Facility",
+          "modifiers": "",
+          "negotiated_type": "Per Case",
+          "median_price": 2810,
+          "percentile_25": 2650,
+          "percentile_50": 2810,
+          "contract_rate": 2690
+        },
+        {
+          "cpt": "85025",
+          "billing_class": "Professional",
+          "modifiers": "QW",
+          "negotiated_type": "Percent of Medicare",
+          "median_price": 58,
+          "percentile_25": 52,
+          "percentile_50": 58,
+          "contract_rate": 56
+        },
+        {
+          "cpt": "74183",
+          "billing_class": "Facility",
+          "modifiers": "TC",
+          "negotiated_type": "Per Case",
+          "median_price": 1120,
+          "percentile_25": 1035,
+          "percentile_50": 1120,
+          "contract_rate": 1065
+        }
+      ],
+      "uploaded_at": "2025-02-15T10:00:00Z",
+      "file": ""
+    },
+    {
+      "id": 201,
+      "title": "Community Clinic Commercial",
+      "description": "Mock commercial payer agreement",
+      "payer_name": "Cigna",
+      "state": "Florida",
+      "effective_date": "2025-03-01T10:00:00Z",
+      "expiration_date": "2026-12-15",
+      "status": "Active",
+      "cpt_codes": 54,
+      "market_rate": 640,
+      "contract_rate": 659,
+      "variance_vs_market": 2.97,
+      "rates": [
+        {
+          "cpt": "99213",
+          "description": "Office Visit",
+          "market_rate": 95,
+          "contract_rate": 98
+        },
+        {
+          "cpt": "93000",
+          "description": "Electrocardiogram",
+          "market_rate": 73,
+          "contract_rate": 76
+        },
+        {
+          "cpt": "20610",
+          "description": "Joint Injection",
+          "market_rate": 145,
+          "contract_rate": 149
+        },
+        {
+          "cpt": "80053",
+          "description": "Comprehensive Metabolic Panel",
+          "market_rate": 86,
+          "contract_rate": 89
+        },
+        {
+          "cpt": "36415",
+          "description": "Venipuncture",
+          "market_rate": 24,
+          "contract_rate": 25
+        }
+      ],
+      "benchmark_rates": [
+        {
+          "cpt": "99213",
+          "billing_class": "Professional",
+          "modifiers": "25",
+          "negotiated_type": "Percent of Medicare",
+          "median_price": 95,
+          "percentile_25": 87,
+          "percentile_50": 95,
+          "contract_rate": 98
+        },
+        {
+          "cpt": "93000",
+          "billing_class": "Professional",
+          "modifiers": "",
+          "negotiated_type": "Percent of Medicare",
+          "median_price": 73,
+          "percentile_25": 66,
+          "percentile_50": 73,
+          "contract_rate": 76
+        },
+        {
+          "cpt": "20610",
+          "billing_class": "Professional",
+          "modifiers": "LT",
+          "negotiated_type": "Per Case",
+          "median_price": 145,
+          "percentile_25": 134,
+          "percentile_50": 145,
+          "contract_rate": 149
+        },
+        {
+          "cpt": "80053",
+          "billing_class": "Professional",
+          "modifiers": "QW",
+          "negotiated_type": "Percent of Medicare",
+          "median_price": 86,
+          "percentile_25": 78,
+          "percentile_50": 86,
+          "contract_rate": 89
+        },
+        {
+          "cpt": "36415",
+          "billing_class": "Professional",
+          "modifiers": "",
+          "negotiated_type": "Percent of Medicare",
+          "median_price": 24,
+          "percentile_25": 22,
+          "percentile_50": 24,
+          "contract_rate": 25
+        }
+      ],
+      "uploaded_at": "2025-03-01T10:00:00Z",
+      "file": ""
+    },
+    {
+      "id": 202,
+      "title": "Surgery Center West Coast",
+      "description": "Mock ASC contract for west coast region",
+      "payer_name": "Blue Shield",
+      "state": "California",
+      "effective_date": "2025-04-10T10:00:00Z",
+      "expiration_date": "2027-06-25",
+      "status": "Active",
+      "cpt_codes": 72,
+      "market_rate": 1025,
+      "contract_rate": 940,
+      "variance_vs_market": -8.29,
+      "rates": [
+        {
+          "cpt": "29827",
+          "description": "Shoulder Arthroscopy with rotator cuff repair",
+          "market_rate": 2450,
+          "contract_rate": 2290
+        },
+        {
+          "cpt": "66984",
+          "description": "Cataract Surgery",
+          "market_rate": 2180,
+          "contract_rate": 2015
+        },
+        {
+          "cpt": "27447",
+          "description": "Total Knee Arthroplasty",
+          "market_rate": 2810,
+          "contract_rate": 2595
+        },
+        {
+          "cpt": "73721",
+          "description": "MRI Lower Extremity",
+          "market_rate": 960,
+          "contract_rate": 905
+        },
+        {
+          "cpt": "80050",
+          "description": "General Health Panel",
+          "market_rate": 140,
+          "contract_rate": 131
+        }
+      ],
+      "benchmark_rates": [
+        {
+          "cpt": "29827",
+          "billing_class": "Facility",
+          "modifiers": "",
+          "negotiated_type": "Per Case",
+          "median_price": 2450,
+          "percentile_25": 2310,
+          "percentile_50": 2450,
+          "contract_rate": 2290
+        },
+        {
+          "cpt": "66984",
+          "billing_class": "Facility",
+          "modifiers": "",
+          "negotiated_type": "Per Case",
+          "median_price": 2180,
+          "percentile_25": 2055,
+          "percentile_50": 2180,
+          "contract_rate": 2015
+        },
+        {
+          "cpt": "27447",
+          "billing_class": "Facility",
+          "modifiers": "",
+          "negotiated_type": "Per Case",
+          "median_price": 2810,
+          "percentile_25": 2660,
+          "percentile_50": 2810,
+          "contract_rate": 2595
+        },
+        {
+          "cpt": "73721",
+          "billing_class": "Facility",
+          "modifiers": "TC",
+          "negotiated_type": "Per Case",
+          "median_price": 960,
+          "percentile_25": 880,
+          "percentile_50": 960,
+          "contract_rate": 905
+        },
+        {
+          "cpt": "80050",
+          "billing_class": "Professional",
+          "modifiers": "QW",
+          "negotiated_type": "Percent of Medicare",
+          "median_price": 140,
+          "percentile_25": 126,
+          "percentile_50": 140,
+          "contract_rate": 131
+        }
+      ],
+      "uploaded_at": "2025-04-10T10:00:00Z",
       "file": ""
     }
   ],
@@ -250,6 +730,80 @@
       }
     ]
   },
+  "payer_price_overview": [
+    {
+      "contract_id": 22,
+      "contract_title": "Digestive Health UHC Georgia",
+      "payer_name": "UHC",
+      "avg_market_rate": 89.52,
+      "avg_contract_rate": 84.67,
+      "matched_codes": 47,
+      "variance_pct": 5.73
+    },
+    {
+      "contract_id": 123,
+      "contract_title": "Test Contract 123",
+      "payer_name": "Test Payer",
+      "avg_market_rate": 101.3,
+      "avg_contract_rate": 95.8,
+      "matched_codes": 29,
+      "variance_pct": 5.74
+    },
+    {
+      "contract_id": 200,
+      "contract_title": "North Metro Outpatient PPO",
+      "payer_name": "Aetna",
+      "avg_market_rate": 112.9,
+      "avg_contract_rate": 103.4,
+      "matched_codes": 63,
+      "variance_pct": 9.19
+    },
+    {
+      "contract_id": 201,
+      "contract_title": "Community Clinic Commercial",
+      "payer_name": "Cigna",
+      "avg_market_rate": 94.2,
+      "avg_contract_rate": 96.1,
+      "matched_codes": 54,
+      "variance_pct": -1.98
+    },
+    {
+      "contract_id": 202,
+      "contract_title": "Surgery Center West Coast",
+      "payer_name": "Blue Shield",
+      "avg_market_rate": 138.6,
+      "avg_contract_rate": 121.7,
+      "matched_codes": 72,
+      "variance_pct": 13.89
+    }
+  ],
+  "payer_price_service_benchmarks": [
+    {
+      "category": "Colonoscopy",
+      "market_benchmark": 1225,
+      "contract_rate": 1160
+    },
+    {
+      "category": "MRI",
+      "market_benchmark": 980,
+      "contract_rate": 910
+    },
+    {
+      "category": "Office Visit",
+      "market_benchmark": 185,
+      "contract_rate": 172
+    },
+    {
+      "category": "Outpatient Surgery",
+      "market_benchmark": 2560,
+      "contract_rate": 2395
+    },
+    {
+      "category": "Lab Test",
+      "market_benchmark": 86,
+      "contract_rate": 79
+    }
+  ],
   "upload": [
     {
       "apiId": "contracts",

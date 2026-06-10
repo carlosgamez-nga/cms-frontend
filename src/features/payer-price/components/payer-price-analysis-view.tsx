@@ -42,11 +42,11 @@ const PayerPriceAnalysisView = ({ initialFilters }: PayerPriceAnalysisViewProps)
 
       {!isLoading && !error ? (
         <div className='flex flex-col xl:flex-row gap-4'>
-          <div className='w-full xl:w-1/3'>
-            <PayerPriceDataTable rows={rows} />
-          </div>
           <div className='w-full xl:w-2/3'>
             <PayerPriceDataChart data={chartData} config={chartConfig} />
+          </div>
+          <div className='w-full xl:w-1/3'>
+            <PayerPriceDataTable rows={rows} />
           </div>
         </div>
       ) : null}

@@ -38,14 +38,6 @@ const SECONDARY_RATE_CANDIDATES = [
 
 const CODE_CANDIDATES = ['billing_code', 'cpt_code', 'code', 'billingCode'];
 
-const humanizeField = (field: string) =>
-  field
-    .replace(/_/g, ' ')
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .replace(/\b\w/g, (char) => char.toUpperCase());
-
 const findFirstNumberField = (rows: PayerPriceApiRow[], candidates: string[]) => {
   for (const candidate of candidates) {
     const hasNumericValue = rows.some((row) => typeof row[candidate] === 'number');
@@ -153,12 +145,12 @@ export const usePayerPriceChartData = ({
   const chartConfig = useMemo<PayerPriceChartConfig>(() => {
     if (!rows.length) return { primaryLabel: 'Rate' };
 
-    const primaryRateField = findFirstNumberField(rows, RATE_CANDIDATES) || 'rate';
     const secondaryRateField = findFirstNumberField(rows, SECONDARY_RATE_CANDIDATES);
 
     return {
-      primaryLabel: humanizeField(primaryRateField),
-      secondaryLabel: secondaryRateField ? humanizeField(secondaryRateField) : undefined,
+      // Keep chart copy stable for the prototype regardless of the provider field names.
+      primaryLabel: 'Primary Rate',
+      secondaryLabel: secondaryRateField ? 'Secondary Rate' : undefined,
     };
   }, [rows]);
 

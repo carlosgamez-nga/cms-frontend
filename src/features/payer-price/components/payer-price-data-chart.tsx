@@ -5,7 +5,9 @@ import {
   ChartConfig,
   ChartContainer,
   ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
+  ChartTooltipContent,
 } from '@/components/ui/chart';
 import {
   Card,
@@ -62,8 +64,8 @@ const PayerPriceDataChart = ({ data, config }: PayerPriceDataChartProps) => {
               axisLine={false}
               tickFormatter={(value) => value.slice(0, 12)}
             />
-            <ChartTooltip cursor={false} />
-            <ChartLegend />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent indicator='dashed' />} />
+            <ChartLegend content={<ChartLegendContent />} />
             <Bar dataKey='primary_rate' fill='#2662D9' radius={4} />
             {config.secondaryLabel ? (
               <Bar dataKey='secondary_rate' fill='#8EC6FF' radius={4} />
@@ -79,4 +81,3 @@ const PayerPriceDataChart = ({ data, config }: PayerPriceDataChartProps) => {
 };
 
 export default PayerPriceDataChart;
-
