@@ -53,9 +53,45 @@ export const columns: ColumnDef<Contract>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <div className='lowercase'>{row.getValue('effective_date')}</div>
-    ),
+    cell: ({ row }) => <div>{row.getValue('effective_date')}</div>,
+  },
+  {
+    accessorKey: 'expiration_date',
+    header: 'Renegotiation Date',
+    cell: ({ row }) => {
+      const date = row.getValue('expiration_date') as string;
+      if (!date) return <div>--</div>;
+      
+      const isExpiringSoon = new Date(date).getTime() - new Date().getTime() < 90 * 24 * 60 * 60 * 1000;
+      
+      return (
+        <div className="flex items-center gap-2">
+          {date}
+          {isExpiringSoon && (
+            <span className="px-1.5 py-0.5 text-[10px] font-medium rounded bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
+              Expiring Soon
+            </span>
+          )}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: 'cpt_codes_count',
+    header: 'CPT Codes',
+    cell: ({ row }) => <div className="text-center">{row.getValue('cpt_codes_count')}</div>,
+  },
+  {
+    accessorKey: 'avg_variance',
+    header: 'Variance vs Market (%)',
+    cell: ({ row }) => {
+      const variance = Number(row.getValue('avg_variance') || 0);
+      return (
+        <div className={`text-right font-medium ${variance < 0 ? 'text-red-500' : 'text-green-500'}`}>
+          {variance > 0 ? '+' : ''}{variance.toFixed(1)}%
+        </div>
+      );
+    },
   },
   {
     accessorKey: 'link',

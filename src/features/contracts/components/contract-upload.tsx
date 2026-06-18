@@ -113,10 +113,10 @@ export default function ContractUpload({ title }: ContractUploadProps) {
   // ...
 
   return (
-    <div className='flex justify-between items-center mx-8 lg:w-[1024px] lg:mx-auto'>
-      <h5>{title}</h5>
+    <div className={title ? 'flex justify-between items-center mx-8 lg:w-[1024px] lg:mx-auto' : ''}>
+      {title && <h5>{title}</h5>}
       <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) resetAndClose(); else setOpen(true); }}>
-        <DialogTrigger asChild><Button>Upload contract</Button></DialogTrigger>
+        <DialogTrigger asChild><Button size={title ? 'default' : 'sm'} variant={title ? 'default' : 'outline'}>{title ? 'Upload contract' : '+ New Contract'}</Button></DialogTrigger>
         <DialogContent onInteractOutside={(e) => isSubmitting && e.preventDefault()}>
           {formStep === 'UPLOAD' && (
             <>

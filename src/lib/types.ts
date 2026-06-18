@@ -6,7 +6,11 @@ export interface Contract {
   file: File;
   id: number;
   effective_date: string;
+  expiration_date: string | null;
+  status: 'Active' | 'Negotiation' | 'Expiring' | 'Terminated';
   uploaded_at: string;
+  cpt_codes_count: number;
+  avg_variance: number | null;
 }
 
 export interface CodeCPT {
