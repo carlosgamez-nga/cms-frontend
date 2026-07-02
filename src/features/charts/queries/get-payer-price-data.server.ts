@@ -20,6 +20,24 @@ export interface PayerPriceRequestParams {
   negotiatedTypes: string[] | null;
 }
 
+export interface PayerPriceRequestParams {
+          filters: {
+            states: string[];
+            taxonomyCodes: string[];
+            payers: string[];
+            billingCodesAndTypes: {
+              code: string;
+              type: string}[]
+            };
+            serviceCodes: string[];
+            negotiatedTypes: string[];
+            billingClasses: string[]
+          };
+          metrics: { aggregations: string[]};
+          groupBy: string[];
+        };
+}
+
 /**
  * Fetches Payer Price data by calling your internal Django proxy endpoint.
  * This is a SERVER-ONLY function, designed to be called by a Server Action.
@@ -29,7 +47,9 @@ export interface PayerPriceRequestParams {
 export const getPayerPriceDataOnServer = async (params: PayerPriceRequestParams): Promise<any> => {
   // 1. Securely get the authenticated headers with the user's token.
   const headers = await getAuthenticatedHeaders();
-  if (!headers['Authorization']) {
+  const reqHeaders = new Headers(headers);
+  
+  if (!reqHeaders.get('authorization')) {
     throw new Error('User is not authenticated.');
   }
 
