@@ -35,8 +35,8 @@ const CMSDataChart = ({ contractData, cmsData, submittedCodes, analysisData }: C
   useEffect(() => {
     if (cmsData && submittedCodes && analysisData) {
       const latestCmsEntries = cmsData.reduce((acc, current) => { const code = current.hcpcs_code; if (!acc[code] || current.year > acc[code].year) { acc[code] = current; } return acc; }, {} as { [key: string]: any });
-      const cmsMap = new Map<string, number>( Object.values(latestCmsEntries).map(item => [ item.hcpcs_code, parseFloat(item.nonfacility_fee_schedule_amount) ]) );
-      
+      const cmsMap = new Map<string, number>( Object.values(latestCmsEntries).map((item: any) => [ item.hcpcs_code, parseFloat(item.nonfacility_fee_schedule_amount) ]) );
+
       // Use the "contract_rate" from the new analysisData prop
       const contractRateMap = new Map<string, number>(
         analysisData.map(item => [item.cpt_code, parseFloat(item.rate)])
