@@ -1,6 +1,8 @@
 interface FinalizeContractPayload {
-  pendingContractId: number;
+  contractId: number;
   effectiveDate: string;
+  payerName?: string;
+  state?: string;
 }
 
 /**

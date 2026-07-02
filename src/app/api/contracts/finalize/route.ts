@@ -17,12 +17,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
   }
 
-  const { contractId, effectiveDate } = await request.json();
+  const { contractId, effectiveDate, payerName, state } = await request.json();
   const djangoApiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/contracts/finalize/`;
 
   const payloadToDjango = {
     contract_id: contractId,
     effective_date: effectiveDate,
+    payer_name: payerName,
+    state: state,
   };
   console.log('Sending this payload to Django for finalization:', payloadToDjango);
 

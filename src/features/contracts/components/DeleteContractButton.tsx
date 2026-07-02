@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { deleteContract } from '@/features/contracts/queries/delete-contract';
 
 interface DeleteContractButtonProps {
   contractId: string | number;
@@ -22,22 +23,15 @@ export default function DeleteContractButton({ contractId }: DeleteContractButto
     setIsDeleting(true);
 
     try {
-      // 2. Make the DELETE request to your Django API
-      // NOTE: Ensure your auth token is passed here if your Next.js setup requires it
-      const response = await fetch(`/api/contracts/${contractId}/`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          // 'Authorization': `Token ${your_auth_token}` <-- Add this if calling Django directly from the client
-        },
-      });
+      // 2. Call the server action to delete the contract securely
+      const response = await deleteContract(contractId);
 
-      if (response.ok) {
+      if (response?.success) {
         // 3. Redirect to dashboard and force a cache refresh so the deleted contract disappears
         router.push('/dashboard');
         router.refresh(); 
       } else {
-        alert('Failed to delete the contract. Please try again.');
+        alert(response?.error || 'Failed to delete the contract. Please try again.');
         setIsDeleting(false);
       }
     } catch (error) {
