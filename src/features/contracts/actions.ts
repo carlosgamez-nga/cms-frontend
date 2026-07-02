@@ -79,8 +79,6 @@ export const fetchNewContractAnalysisAction = async (params: NewContractAnalysis
 
 
 export async function fetchContractRatesAction(contractId: number, cptCodes: string[]) {
-  // Authentication is now handled within getAuthenticatedHeaders called by getCurrentContractData
-  // but you can keep a direct check here for quick fail if needed.
   console.log("HERE2")
 
   const token = await getAuthToken(); // Or directly use getAuthenticatedHeaders as in the query

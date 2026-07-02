@@ -51,13 +51,11 @@ export const getCurrentContractData = async (params: GetCurrentContractDataParam
     
     // Handle both flat arrays and paginated DRF responses
     const allRates: ContractRateResponse[] = Array.isArray(json) ? json : (json.results || []);
-    console.log(allRates);
     
     // 3. FILTER DOWN TO REQUESTED CPT CODES
     const filteredRates = allRates.filter((rateObj) => 
       params.cptCodes.includes(rateObj.cpt_code)
     );
-    console.log(filteredRates)
 
     return filteredRates;
 
