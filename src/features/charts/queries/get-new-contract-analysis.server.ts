@@ -21,7 +21,9 @@ export const getNewContractAnalysisData = async (params: NewContractAnalysisPara
   }
 
   const headers = await getAuthenticatedHeaders();
-  if (!headers['Authorization']) {
+  const reqHeaders = new Headers(headers);
+  
+  if (!reqHeaders.get('authorization')) {
     throw new Error('User is not authenticated.');
   }
 

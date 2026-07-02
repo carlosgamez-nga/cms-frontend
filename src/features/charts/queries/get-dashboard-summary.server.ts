@@ -20,10 +20,12 @@ export interface DashboardSummary {
  * Fetches dashboard aggregate statistics from the Django API.
  */
 export const getDashboardSummary = async (): Promise<DashboardSummary | null> => {
-  const headers = await getAuthenticatedHeaders();
-  if (!headers['Authorization']) {
-    return null;
-  }
+const headers = await getAuthenticatedHeaders();
+   const reqHeaders = new Headers(headers);
+   
+   if (!reqHeaders.get('authorization')) {
+     return null;
+   }
 
   const djangoApiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/dashboard-summary/`;
   
