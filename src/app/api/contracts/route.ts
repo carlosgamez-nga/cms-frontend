@@ -11,8 +11,6 @@ export async function GET() {
    if (!reqHeaders.get('authorization')) {
      return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
    }
-    return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
-  }
   
   const djangoApiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/my-contracts/`;
 
