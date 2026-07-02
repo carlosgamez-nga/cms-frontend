@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     }
 
     // Set the cookie
-    cookies().set('authToken', token, {
+    (await cookies()).set('authToken', token, {
       httpOnly: true, // Makes the cookie inaccessible to client-side JavaScript
       secure: process.env.NODE_ENV === 'production', // Use secure in production (HTTPS)
       maxAge: 60 * 60 * 24 * 7, // 1 week (adjust as needed)

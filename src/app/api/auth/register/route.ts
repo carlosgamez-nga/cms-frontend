@@ -42,7 +42,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Login succeeded but no token was provided.' }, { status: 500 });
     }
 
-    cookies().set('authToken', token, {
+   const cookieStore = await cookies();
+    cookieStore.set('authToken', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 60 * 60 * 24, // 1 day expiry
