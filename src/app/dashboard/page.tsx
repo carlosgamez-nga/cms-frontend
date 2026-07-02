@@ -9,7 +9,7 @@ import ContractUpload from '@/features/contracts/components/contract-upload';
 import RecentContracts from './components/recent-contracts/recent-contracts';
 import MarketComparisonChart from './components/charts/market-comparison-chart';
 import PayerDistributionChart from './components/charts/payer-distribution-chart';
-import { Contract } from '@/src/lib/types.ts'; 
+import { Contract } from '@/lib/types.ts'; 
 
 export const dynamic = 'force-dynamic';
 
