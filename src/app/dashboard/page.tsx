@@ -132,8 +132,7 @@ export default async function Home() {
                     </tr>
                   </thead>
                   <tbody className="text-sm text-gray-800 dark:text-gray-300">
-                    {(summary?.top_contracts || contracts.slice(0, 5)).map((contract) => (
-                      <tr key={contract.id} className="border-b border-gray-100 dark:border-gray-700/50 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
+                        {(summary?.top_contracts || contracts.slice(0, 5)).map((contract: { id: number, title: string, payer_name: string }) => (                      <tr key={contract.id} className="border-b border-gray-100 dark:border-gray-700/50 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
                         <td className="py-3 px-1 font-medium truncate max-w-[150px]">{contract.title}</td>
                         <td className="py-3 px-1">{contract.payer_name || 'Unknown'}</td>
                         <td className="py-3 px-1 text-right text-gray-500 dark:text-gray-400">{contract.cpt_codes_count}</td>
