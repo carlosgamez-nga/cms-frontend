@@ -3,7 +3,7 @@
 import { getAuthenticatedHeaders } from '@/lib/auth';
 
 // 1. This matches your UI form components (dropdown structures)
-export interface PayerPriceFormState {
+export interface PayerPriceRequestParams {
   benchmarkType: string;
   payers: { value: string; title: string; grouping: null }[];
   states: string[];
