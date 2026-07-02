@@ -6,8 +6,11 @@ export async function GET() {
   const headers = await getAuthenticatedHeaders();
 
   // 2. If the user isn't logged in, the header will be empty.
-  const headersList = await headers();
-  if (!headersList.get('authorization')) {
+   const reqHeaders = new Headers(headers);
+   
+   if (!reqHeaders.get('authorization')) {
+     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
+   }
     return NextResponse.json({ error: 'Authentication required.' }, { status: 401 });
   }
   
