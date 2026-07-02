@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 // import { PiArrowsDownUp } from 'react-icons/pi';
-import CPTCodesInfo from '../../../features/cpt-codes/components/code-list';
+//import CPTCodesInfo from '../../../features/cpt-codes/components/cpt-codes-info';
 
 const ChartCard = () => {
   return (
@@ -32,7 +32,7 @@ const ChartCard = () => {
         </div>
       </CardHeader>
       <CardContent className='pl-0'>
-        <CPTCodesInfo />
+        {/*<CPTCodesInfo /> */}
       </CardContent>
     </Card>
   );
