@@ -2,9 +2,8 @@
 
 import { getAuthenticatedHeaders } from '@/lib/auth';
 
-// Define the shape of the request parameters that the Payer Price API expects.
-// This ensures that your Server Action sends the correct data structure to this function.
-export interface PayerPriceRequestParams {
+// 1. This matches your UI form components (dropdown structures)
+export interface PayerPriceFormState {
   benchmarkType: string;
   payers: { value: string; title: string; grouping: null }[];
   states: string[];
@@ -20,22 +19,24 @@ export interface PayerPriceRequestParams {
   negotiatedTypes: string[] | null;
 }
 
-export interface PayerPriceRequestParams {
-          filters: {
-            states: string[];
-            taxonomyCodes: string[];
-            payers: string[];
-            billingCodesAndTypes: {
-              code: string;
-              type: string}[]
-            };
-            serviceCodes: string[];
-            negotiatedTypes: string[];
-            billingClasses: string[]
-          };
-          metrics: { aggregations: string[]};
-          groupBy: string[];
-        };
+// 2. This EXACTLY matches the curl documentation for the API request payload
+export interface PayerPriceApiPayload {
+  filters: {
+    states: string[];
+    taxonomyCodes: string[];
+    payers: string[];
+    billingCodeAndTypes: { // note: changed from billingCodesAndTypes to match your curl docs
+      code: string;
+      type: string;
+    }[];
+    serviceCodes: string[];
+    negotiatedTypes: string[];
+    billingClasses: string[];
+  };
+  metrics: {
+    aggregations: string[];
+  };
+  groupBy: string[];
 }
 
 /**
