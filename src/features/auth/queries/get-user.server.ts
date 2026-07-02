@@ -11,10 +11,11 @@ export const getUserDetailsOnServer = async (): Promise<User | null> => {
   const headers = await getAuthenticatedHeaders();
 
   // 2. If no Authorization header, the user is not logged in.
-  if (!headers['Authorization']) {
-    console.log('getUserDetailsOnServer: No auth token found.');
-    return null;
-  }
+   const reqHeaders = new Headers(headers);
+   if (!reqHeaders.get('authorization')) {
+     console.log('getUserDetailsOnServer: No auth token found.');
+     return null;
+   }
 
   const djangoApiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user-details/`; // Your Django endpoint for user details
 
