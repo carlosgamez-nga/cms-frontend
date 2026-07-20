@@ -23,10 +23,12 @@ export const getCmsDataForCodes = async (params: CmsDataRequestParams): Promise<
     return [];
   }
 
-  const headers = await getAuthenticatedHeaders();
-  if (!headers['Authorization']) {
-    return [];
-  }
+   const headers = await getAuthenticatedHeaders();
+   const reqHeaders = new Headers(headers);
+   
+   if (!reqHeaders.get('authorization')) {
+     return [];
+   }
 
   const djangoApiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cms-data/`;
 
