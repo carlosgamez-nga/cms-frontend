@@ -2,7 +2,7 @@
 
 import { TrendingUp } from 'lucide-react';
 import { Pie, PieChart } from 'recharts';
-import { CodeCPT } from '@/features/types';
+import { CodeCPT } from '@/lib/types';
 
 import {
   Card,
