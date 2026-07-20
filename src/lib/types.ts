@@ -12,7 +12,7 @@ export interface Contract {
   cpt_codes_count: number;
   avg_variance: number | null;
   // optional for now
-  year?: string | number;
+  year?: string;
   carrier_number?: string;
   locality?: string;
 }
