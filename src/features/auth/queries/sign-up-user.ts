@@ -15,7 +15,7 @@ type SignUpCredentials = z.infer<typeof formSchema>;
  * @param credentials - The new user's details from the form.
  */
 export const signUpUser = async (credentials: SignUpCredentials) => {
-  const response = await fetch('/api/auth/register', {
+  const response = await fetch('/dashboard/api/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
