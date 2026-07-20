@@ -8,10 +8,12 @@ import { getAuthenticatedHeaders } from '@/lib/auth'; // This is safe because th
  * Fetches contracts directly from the Django API. SERVER-ONLY.
  */
 export const getContractsOnServer = async (): Promise<Contract[]> => {
-  const headers = await getAuthenticatedHeaders();
-  if (!headers['Authorization']) {
-    return [];
-  }
+   const headers = await getAuthenticatedHeaders();
+   const reqHeaders = new Headers(headers);
+   
+   if (!reqHeaders.get('authorization')) {
+     return [];
+   }
   // ... rest of the fetch logic ...
   const djangoApiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/my-contracts/`;
   try {
@@ -33,10 +35,12 @@ export const getContractsOnServer = async (): Promise<Contract[]> => {
  * Fetches a SINGLE contract by its ID. SERVER-ONLY.
  */
 export const getContract = async (contractId: string): Promise<Contract | null> => {
-    const headers = await getAuthenticatedHeaders();
-    if (!headers['Authorization']) {
-      return null;
-    }
+   const headers = await getAuthenticatedHeaders();
+   const reqHeaders = new Headers(headers);
+   
+   if (!reqHeaders.get('authorization')) {
+     return null;
+   }
     // ... rest of the fetch logic ...
     const djangoApiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/contracts/${contractId}/`;
     try {

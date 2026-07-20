@@ -16,10 +16,12 @@ export interface ContractAnalysisRow {
  * Fetches the comparison analysis between a contract and market benchmarks.
  */
 export const getContractAnalysis = async (contractId: string): Promise<ContractAnalysisRow[]> => {
-  const headers = await getAuthenticatedHeaders();
-  if (!headers['Authorization']) {
-    return [];
-  }
+   const headers = await getAuthenticatedHeaders();
+   const reqHeaders = new Headers(headers);
+   
+   if (!reqHeaders.get('authorization')) {
+     return [];
+   }
 
   const djangoApiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/contracts/${contractId}/analysis/`;
   
