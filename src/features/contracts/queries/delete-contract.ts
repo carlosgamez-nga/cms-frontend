@@ -5,10 +5,12 @@ import { getAuthenticatedHeaders } from '@/lib/auth';
 export const deleteContract = async (
   id: string | number
 ): Promise<{ success: boolean; error?: string }> => {
-  const headers = await getAuthenticatedHeaders();
-  if (!headers['Authorization']) {
-    return { success: false, error: 'Unauthorized' };
-  }
+   const headers = await getAuthenticatedHeaders();
+   const reqHeaders = new Headers(headers);
+   
+   if (!reqHeaders.get('authorization')) {
+     return { success: false, error: 'Unauthorized' };
+   }
 
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/contracts/${id}/`, {
