@@ -92,7 +92,7 @@ export default function ContractChartsView({ contract }: ContractChartsViewProps
 
         const [contractRes, cmsRes] = await Promise.all([contractRatesPromise, cmsPromise]);
         const rawContractData = contractRes.data;
-        const cleanContractList = Array.isArray(rawContractData) ? rawContractData : rawContractData?.results || [];
+        const cleanContractList = Array.isArray(rawContractData) ? rawContractData : (rawContractData as any)?.results || [];
 
         if (contractRes.error) throw new Error(contractRes.error);
         if (cmsRes.error) throw new Error(cmsRes.error);
