@@ -75,7 +75,7 @@ const AppSidebar = () => {
     localStorage.removeItem('userName');
     
     // 3. Send the user back to the login screen
-    router.push('/login');
+    router.push('/sign-in');
   };
 
   const getInitials = (name: string) => {
