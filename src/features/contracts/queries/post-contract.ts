@@ -6,7 +6,7 @@
  */
 export async function postContract(formData: FormData): Promise<any> {
   // The URL now points to your internal API route.
-  const apiUrl = '/api/contracts/upload';
+  const apiUrl = '/api/contracts/upload/';
 
   const response = await fetch(apiUrl, {
     method: 'POST',
