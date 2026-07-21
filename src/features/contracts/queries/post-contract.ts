@@ -1,17 +1,21 @@
-// src/features/contracts/queries/post-contract.ts
-
 /**
  * Submits contract FormData to the internal Next.js API route.
  * This function runs on the client.
  */
 export async function postContract(formData: FormData): Promise<any> {
-  // The URL now points to your internal API route.
   const apiUrl = '/api/contracts/upload/';
+
+  // 1. Retrieve your auth token. 
+  // (Adjust this line based on how you store your token: e.g., document.cookie, localStorage, or a Zustand/Redux store)
+  const token = localStorage.getItem('authToken'); 
 
   const response = await fetch(apiUrl, {
     method: 'POST',
     body: formData,
-    // No auth headers are needed here; the browser sends the cookie.
+    headers: {
+      // 2. Explicitly send the Token to Django
+      'Authorization': `Token ${token}`
+    }
   });
 
   const responseData = await response.json().catch(() => ({}));
