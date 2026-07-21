@@ -1,19 +1,22 @@
-/**
- * Submits contract FormData to the internal Next.js API route.
- * This function runs on the client.
- */
 export async function postContract(formData: FormData): Promise<any> {
   const apiUrl = '/api/contracts/upload/';
 
-  // 1. Retrieve your auth token. 
-  // (Adjust this line based on how you store your token: e.g., document.cookie, localStorage, or a Zustand/Redux store)
-  const token = localStorage.getItem('authToken'); 
+  // 1. Helper function to read a specific cookie by name
+  const getCookie = (name: string) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(';').shift();
+    return null;
+  };
+
+  // 2. Grab the token from the 'authToken' cookie
+  const token = getCookie('authToken');
 
   const response = await fetch(apiUrl, {
     method: 'POST',
     body: formData,
     headers: {
-      // 2. Explicitly send the Token to Django
+      // 3. Send the token to Django
       'Authorization': `Token ${token}`
     }
   });
