@@ -4,7 +4,7 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
 import { PiTrendDown } from 'react-icons/pi';
 
-import { CodeCPT } from '@/features/types';
+import { CodeCPT } from '@/lib/types';
 
 import {
   ChartConfig,

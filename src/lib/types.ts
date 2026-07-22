@@ -1,12 +1,20 @@
 export interface Contract {
+  id: number;
   title: string;
   description: string;
   payer_name: string;
   state: string;
   file: File;
-  id: number;
   effective_date: string;
+  expiration_date: string | null;
+  status: 'Active' | 'Negotiation' | 'Expiring' | 'Terminated';
   uploaded_at: string;
+  cpt_codes_count: number;
+  avg_variance: number | null;
+  // optional for now
+  year?: string;
+  carrier_number?: string;
+  locality?: string;
 }
 
 export interface CodeCPT {
@@ -102,4 +110,12 @@ export interface NewContractData {
   year: string;
 
   cpt_prices: CPTPrice[];
+}
+
+export interface User {
+  id: number;
+  email: string;
+  username?: string;
+  first_name?: string;
+  last_name?: string;
 }

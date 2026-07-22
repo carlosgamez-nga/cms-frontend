@@ -32,7 +32,7 @@ const ContractList = () => {
         }
 
         // 2. Use the retrieved token to fetch user contracts
-        const userContracts = await fetchUserContracts(token);
+        const userContracts = await fetchUserContracts();
         setContracts(userContracts);
 
       } catch (err: any) {
