@@ -58,12 +58,22 @@ const AppSidebar = () => {
   const [userName, setUserName] = useState('User');
 
   useEffect(() => {
-    // Check localStorage for the user's data when the sidebar mounts
-    const storedEmail = localStorage.getItem('userEmail');
-    const storedName = localStorage.getItem('userName');
-    
-    if (storedEmail) setUserEmail(storedEmail);
-    if (storedName) setUserName(storedName);
+    const loadUserData = () => {
+      const storedEmail = localStorage.getItem('userEmail');
+      const storedName = localStorage.getItem('userName');
+      if (storedEmail) setUserEmail(storedEmail);
+      if (storedName) setUserName(storedName);
+    };
+
+    loadUserData();
+
+    window.addEventListener('storage', loadUserData);
+    window.addEventListener('user-profile-updated', loadUserData);
+
+    return () => {
+      window.removeEventListener('storage', loadUserData);
+      window.removeEventListener('user-profile-updated', loadUserData);
+    };
   }, []);
 
   const handleLogout = () => {
@@ -156,11 +166,15 @@ const AppSidebar = () => {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    <UserRound className='mr-2' size={20} /> Profile
+                  <DropdownMenuItem asChild className='cursor-pointer'>
+                    <Link href='/dashboard/profile'>
+                      <UserRound className='mr-2' size={20} /> Profile
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Settings className='mr-2' size={20} /> Settings
+                  <DropdownMenuItem asChild className='cursor-pointer'>
+                    <Link href='/dashboard/settings'>
+                      <Settings className='mr-2' size={20} /> Settings
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   
