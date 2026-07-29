@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import AppSidebar from './components/sidebar/app-sidebar';
 import Navbar from './components/navbar';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from '@/providers/ThemeProvider';
 
 const layout = async ({ children }: { children: React.ReactNode }) => {
@@ -22,6 +23,7 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
           <Navbar />
           <div className='px-8'>{children}</div>
         </main>
+        <Toaster closeButton richColors />
       </SidebarProvider>
     </ThemeProvider>
   );
