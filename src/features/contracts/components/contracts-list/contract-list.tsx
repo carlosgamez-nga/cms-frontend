@@ -31,7 +31,6 @@ const ContractList = () => {
           throw new Error('Authentication token not available after retrieval.');
         }
 
-        // 2. Use the retrieved token to fetch user contracts
         const userContracts = await fetchUserContracts();
         setContracts(userContracts);
 

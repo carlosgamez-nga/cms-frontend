@@ -57,16 +57,36 @@ export const getPayerPriceDataOnServer = async (params: PayerPriceRequestParams)
   // 2. Define the correct URL for your Django proxy endpoint.
   const djangoProxyUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/payerprice/create-report/`;
 
+  // 3. Transform the raw UI params into the structure the Django serializer expects.
+  const payload: PayerPriceApiPayload = {
+    filters: {
+      states: params.states,
+      taxonomyCodes: params.taxonomies.map(t => t.value),
+      payers: params.payers.map(p => p.value),
+      billingCodeAndTypes: params.billingCodeAndTypes.map(b => ({
+        code: b.value.code,
+        type: b.value.type,
+      })),
+      serviceCodes: params.serviceCodes.map(s => s.value),
+      negotiatedTypes: params.negotiatedTypes ? params.negotiatedTypes.map((n: any) => n.value) : [],
+      billingClasses: params.billingClasses ? params.billingClasses.map((c: any) => c.value) : [],
+    },
+    metrics: {
+      aggregations: ['avg_rate', 'median_rate', 'percentile_25', 'percentile_75', 'min_rate', 'max_rate', 'num_distinct_npis'],
+    },
+    groupBy: ['billingCode', 'payer'],
+  };
+
   try {
-    // 3. Make the authenticated POST request to your Django backend.
+    // 4. Make the authenticated POST request to your Django backend.
     const res = await fetch(djangoProxyUrl, {
       method: 'POST',
       headers: headers,
-      body: JSON.stringify(params),
+      body: JSON.stringify(payload),
       cache: 'no-store', // Important for dynamic API calls to always get fresh data
     });
 
-    // 4. Handle any errors from your Django proxy.
+    // 5. Handle any errors from your Django proxy.
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
       // Throw a specific error message from the backend if available

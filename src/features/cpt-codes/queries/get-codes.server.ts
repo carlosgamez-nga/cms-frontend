@@ -23,22 +23,18 @@ export const getCmsDataForCodes = async (params: CmsDataRequestParams): Promise<
     return [];
   }
 
-   const headers = await getAuthenticatedHeaders();
-   const reqHeaders = new Headers(headers);
-   
-   if (!reqHeaders.get('authorization')) {
-     return [];
-   }
+  const headers = await getAuthenticatedHeaders();
 
   const djangoApiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cms-data/`;
 
-  // The requestBody is now the params object itself.
   const requestBody = {
     year: params.year,
     carrier_number: params.carrier_number,
     locality: params.locality,
     hcpcs_codes: params.hcpcs_codes,
   };
+
+  console.log(`[CMS] Fetching ${djangoApiUrl} with auth:`, Object.keys(headers as Record<string,string>).join(', '));
 
   try {
     const res = await fetch(djangoApiUrl, {
@@ -49,13 +45,14 @@ export const getCmsDataForCodes = async (params: CmsDataRequestParams): Promise<
     });
 
     if (!res.ok) {
-      console.error('getCmsDataForCodes: Failed to fetch from Django:', res.status, res.statusText);
-      return [];
+      const errorText = await res.text().catch(() => res.statusText);
+      console.error(`getCmsDataForCodes: Django returned ${res.status}:`, errorText);
+      throw new Error(`CMS data fetch failed (${res.status}): ${errorText}`);
     }
 
     return res.json();
   } catch (error) {
     console.error('Error in getCmsDataForCodes:', error);
-    return [];
+    throw error;
   }
 };

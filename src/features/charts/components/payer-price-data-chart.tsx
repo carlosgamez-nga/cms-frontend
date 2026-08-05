@@ -12,13 +12,32 @@ import { Contract } from '@/lib/types';
 // --- Chart-specific components (Legend, Tooltip) ---
 const ChartLegendContent = () => ( <div className='flex gap-1 mt-4 flex-wrap text-sm items-center justify-center lg:gap-4'> <LegendItem color='#2662D9' label='Payer Price (50th %)' /> <LegendItem color='#8EC6FF' label='Equal to Payer' /> <LegendItem color='#16a34a' label='↑ Above Payer' /> <LegendItem color='#dc2626' label='↓ Below Payer' /> </div> );
 const LegendItem = ({ color, label }: { color: string; label: string }) => ( <div className='flex items-center gap-2'> <span className='inline-block h-3 w-3 rounded-full' style={{ backgroundColor: color }} /> <span>{label}</span> </div> );
-const ChartTooltipContent = ({ payload = [] }: TooltipProps<ValueType, NameType>) => { if (!payload || payload.length === 0) return null; const data = payload[0].payload; return ( <div className='rounded-md border bg-background p-3 shadow-sm'> <div className='font-medium text-sm mb-1'>Code: {data.code}</div> <ul className='space-y-1 text-sm'> <li className='flex items-center justify-between'> <span className='text-muted-foreground'>Payer Price (50th):</span> <span className='font-bold text-[#2662D9]'>${data.payer_price.toFixed(2)}</span> </li> <li className='flex items-center justify-between'> <span className='text-muted-foreground'>Current:</span> <span className='font-bold' style={{ color: data.currentContractFill }}>${data.current_contract.toFixed(2)}</span> </li> </ul> </div> ); };
+const ChartTooltipContent = ({ payload = [] }: TooltipProps<ValueType, NameType>) => {
+  if (!payload || payload.length === 0) return null;
+  const data = payload[0].payload;
+  const fmt = (v: number) => v > 0 ? `$${v.toFixed(2)}` : 'N/A';
+  return (
+    <div className='rounded-md border bg-background p-3 shadow-sm min-w-[200px]'>
+      <div className='font-medium text-sm mb-2'>CPT: {data.code}</div>
+      <ul className='space-y-1 text-xs'>
+        <li className='flex justify-between'><span className='text-muted-foreground'>Your Rate:</span><span className='font-bold' style={{ color: data.currentContractFill }}>{fmt(data.current_contract)}</span></li>
+        <li className='flex justify-between'><span className='text-muted-foreground'>Market Median:</span><span className='font-bold text-[#2662D9]'>{fmt(data.payer_price)}</span></li>
+        <li className='flex justify-between'><span className='text-muted-foreground'>Market Avg:</span><span>{fmt(data.avg)}</span></li>
+        <li className='flex justify-between'><span className='text-muted-foreground'>25th Pct:</span><span>{fmt(data.p25)}</span></li>
+        <li className='flex justify-between'><span className='text-muted-foreground'>75th Pct:</span><span>{fmt(data.p75)}</span></li>
+      </ul>
+    </div>
+  );
+};
 // ---
 
 type ChartDatum = {
   code: string;
   current_contract: number;
   payer_price: number;
+  p25: number;
+  p75: number;
+  avg: number;
   currentContractFill: string;
 };
 
@@ -33,27 +52,41 @@ const PayerPriceDataChart = ({ contractData, payerPriceData, submittedCodes, ana
   const [chartData, setChartData] = useState<ChartDatum[]>([]);
 
   useEffect(() => {
-    if (payerPriceData && submittedCodes && analysisData) {
-      const percentileRows = payerPriceData?.message?.[0]?.percentileRows || [];
-      const payerMap = new Map<string, number>( percentileRows.map((item: any) => [ item.billing_code, item.percentile_50 ]) );
-      
-      // Use the "contract_rate" from the new analysisData prop
-      const contractRateMap = new Map<string, number>(
-        analysisData.map(item => [item.cpt_code, parseFloat(item.contract_rate)])
-      );
-      
-      const merged = submittedCodes.map((code) => {
-        const payerPrice = payerMap.get(code) || 0;
-        const currentPrice = contractRateMap.get(code) || 0; // <-- Use the new map
-        return {
-          code,
-          current_contract: currentPrice,
-          payer_price: payerPrice,
-          currentContractFill: currentPrice > payerPrice ? '#16a3a' : currentPrice < payerPrice ? '#dc2626' : '#8EC6FF',
-        };
-      });
-      setChartData(merged);
+    if (!payerPriceData || !submittedCodes || !analysisData) return;
+
+    // The API returns a flat array: [{ billingCode, metrics, payer, value }, ...]
+    // Pivot into a map: billingCode -> { metric -> value }
+    const payerMap = new Map<string, Record<string, number>>();
+    const rows: { billingCode: string; metrics: string; payer: string; value: number }[] =
+      Array.isArray(payerPriceData) ? payerPriceData : [];
+
+    for (const row of rows) {
+      if (!payerMap.has(row.billingCode)) {
+        payerMap.set(row.billingCode, {});
+      }
+      payerMap.get(row.billingCode)![row.metrics] = row.value;
     }
+
+    const contractRateMap = new Map<string, number>(
+      analysisData.map(item => [item.cpt_code, parseFloat(item.contract_rate)])
+    );
+
+    const merged = submittedCodes.map((code) => {
+      const metrics = payerMap.get(code) || {};
+      // Prefer median_rate, fall back to avg_rate
+      const payerPrice = metrics['median_rate'] ?? metrics['avg_rate'] ?? 0;
+      const currentPrice = contractRateMap.get(code) ?? 0;
+      return {
+        code,
+        current_contract: currentPrice,
+        payer_price: payerPrice,
+        p25: metrics['percentile_25'] ?? 0,
+        p75: metrics['percentile_75'] ?? 0,
+        avg: metrics['avg_rate'] ?? 0,
+        currentContractFill: currentPrice > payerPrice ? '#16a34a' : currentPrice < payerPrice ? '#dc2626' : '#8EC6FF',
+      };
+    });
+    setChartData(merged);
   }, [contractData, payerPriceData, submittedCodes, analysisData]);
 
   const chartConfig: ChartConfig = {
