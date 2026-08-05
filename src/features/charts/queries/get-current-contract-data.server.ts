@@ -27,7 +27,7 @@ export const getCurrentContractData = async (params: GetCurrentContractDataParam
   }
 
   // 2. SET UP THE URL
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"; 
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://127.0.0.1:8000"; 
   const endpoint = `/api/contracts/${params.contractId}/rates/`; 
   const fullUrl = `${baseUrl}${endpoint}`;
 

@@ -77,11 +77,11 @@ export default async function Home() {
               
               <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm flex flex-row items-center justify-between transition-colors duration-200">
                 <div>
-                  <p className="text-gray-500 dark:text-gray-400 mb-2 font-medium">Contracts Expiring in 90 Days</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{summary?.expiring_soon ?? 0}</p>
+                  <p className="text-gray-500 dark:text-gray-400 mb-2 font-medium">Contracts Missing Rates</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{summary?.missing_rate_data ?? 0}</p>
                 </div>
                 <span className="px-2 py-1 text-xs font-medium rounded bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
-                  Attention Needed
+                  Action Required
                 </span>
               </div>
 

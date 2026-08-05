@@ -9,6 +9,9 @@ import Spinner from '@/components/spinner';
 import CMSDataChart from '@/features/charts/components/cms-data-chart';
 import PayerPriceDataChart from '@/features/charts/components/payer-price-data-chart';
 
+import { COMMON_TAXONOMIES } from '@/lib/constants/taxonomies';
+import { PAYERPRICE_BILLING_CLASSES, PAYERPRICE_MODIFIERS, PAYERPRICE_PAYERS } from '@/lib/constants/payerprice';
+
 // Import Server Actions
 import { 
   fetchChartDataAction, 
@@ -18,9 +21,10 @@ import {
 
 interface ContractChartsViewProps {
   contract: Contract;
+  availableCpts?: string[];
 }
 
-export default function ContractChartsView({ contract }: ContractChartsViewProps) {
+export default function ContractChartsView({ contract, availableCpts = [] }: ContractChartsViewProps) {
   // Existing States
   const [cptInput, setCptInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -102,18 +106,24 @@ export default function ContractChartsView({ contract }: ContractChartsViewProps
         toast.success('CMS comparison generated!');
 
       } else if (tab === 'payer-price-analysis') {
-        const payerApiValueMap: { [key: string]: string } = { 'UHC': 'United' };
-        const payerApiValue = payerApiValueMap[contract.payer_name] || contract.payer_name;
-        
+        if (!payerInput) {
+          throw new Error('Please select a payer for Payer Price Analysis.');
+        }
+
         const params = {
           benchmarkType: "marketOverview", 
-          payers: [{ value: payerApiValue, title: "", grouping: null }], 
+          payers: [{ value: payerInput, title: "", grouping: null }], 
           states: [contract.state],
           billingCodeAndTypes: codes.map(c => ({ value: { code: c, type: "CPT" }, title: "", grouping: null, description: null })),
           taxonomies: taxonomyInput ? [{ value: taxonomyInput, title: "", grouping: null }] : [{ value: "208D00000X", title: "", grouping: null }], 
           serviceCodes: [{ value: "11", title: "", grouping: null }],
           yearMonths: [{ value: { year: 2025, month: 6 }, title: "", grouping: null }],
-          counties: null, billingCodeModifiers: null, billingClasses: null, entityTypes: null, includeIndirectNpis: false, negotiatedTypes: null,
+          counties: null, 
+          billingCodeModifiers: modifiers ? [{ value: modifiers, title: "", grouping: null }] : null, 
+          billingClasses: billingClass ? [{ value: billingClass, title: "", grouping: null }] : null, 
+          entityTypes: null, 
+          includeIndirectNpis: false, 
+          negotiatedTypes: negotiatedType !== 'Any' ? [{ value: negotiatedType, title: "", grouping: null }] : null,
         };
 
         const payerPromise = fetchPayerPriceAction(params);
@@ -178,23 +188,32 @@ export default function ContractChartsView({ contract }: ContractChartsViewProps
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-gray-700 dark:text-gray-300 mb-1 font-medium">Payer</label>
-                <input 
-                  type="text" 
+                <select 
                   value={payerInput}
                   onChange={(e) => setPayerInput(e.target.value)}
                   className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                />
+                >
+                  <option value="">Select a payer...</option>
+                  {PAYERPRICE_PAYERS.map(payer => (
+                    <option key={payer.value} value={payer.value}>
+                      {payer.label}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-gray-700 dark:text-gray-300 mb-1 font-medium">Provider Taxonomy</label>
                 <select 
                   value={taxonomyInput}
                   onChange={(e) => setTaxonomyInput(e.target.value)}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="">Select or type...</option>
-                  <option value="207Q00000X">e.g. 207Q00000X</option>
-                  <option value="208D00000X">208D00000X</option>
+                  <option value="">Select a taxonomy...</option>
+                  {COMMON_TAXONOMIES.map((tax) => (
+                    <option key={tax.code} value={tax.code}>
+                      {tax.name} ({tax.code})
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -206,35 +225,67 @@ export default function ContractChartsView({ contract }: ContractChartsViewProps
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               <div>
                 <label className="block text-gray-700 dark:text-gray-300 mb-1 font-medium">
-                  Billing Code (HCPCS/CPT) <span className="text-red-500">*</span>
+                  Billing Code (CPT) <span className="text-red-500">*</span>
                 </label>
-                <input 
-                  type="text" 
-                  value={cptInput}
-                  onChange={(e) => setCptInput(e.target.value)}
-                  placeholder="e.g. 99213, 99214" 
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                />
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {cptInput.split(',').filter(Boolean).map(code => (
+                    <span key={code} className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 px-2 py-1 rounded-md text-xs flex items-center gap-1">
+                      {code}
+                      <button 
+                        type="button" 
+                        onClick={() => {
+                          const newCodes = cptInput.split(',').filter(c => c && c !== code);
+                          setCptInput(newCodes.join(','));
+                        }}
+                        className="hover:text-red-500 ml-1"
+                      >
+                        &times;
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <select
+                  value=""
+                  onChange={(e) => {
+                    if (!e.target.value) return;
+                    const codes = cptInput.split(',').filter(Boolean);
+                    if (!codes.includes(e.target.value)) {
+                      setCptInput([...codes, e.target.value].join(','));
+                    }
+                  }}
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                >
+                  <option value="">Select a CPT code to add...</option>
+                  {availableCpts.filter(c => !cptInput.split(',').includes(c)).map((code) => (
+                    <option key={code} value={code}>{code}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-gray-700 dark:text-gray-300 mb-1 font-medium">Billing Class</label>
-                <input 
-                  type="text" 
+                <select 
                   value={billingClass}
                   onChange={(e) => setBillingClass(e.target.value)}
-                  placeholder="e.g. professional" 
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                />
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                >
+                  <option value="">Select...</option>
+                  {PAYERPRICE_BILLING_CLASSES.map((cls) => (
+                    <option key={cls.value} value={cls.value}>{cls.label}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-gray-700 dark:text-gray-300 mb-1 font-medium">Billing Code Modifiers</label>
-                <input 
-                  type="text" 
+                <select 
                   value={modifiers}
                   onChange={(e) => setModifiers(e.target.value)}
-                  placeholder="Comma-separated, e.g. 25,59" 
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                />
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                >
+                  <option value="">Select...</option>
+                  {PAYERPRICE_MODIFIERS.map((mod) => (
+                    <option key={mod.value} value={mod.value}>{mod.label}</option>
+                  ))}
+                </select>
               </div>
             </div>
             <div className="w-full md:w-1/3 md:pr-2">

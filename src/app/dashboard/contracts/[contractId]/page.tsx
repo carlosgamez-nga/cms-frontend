@@ -3,6 +3,7 @@ import { getContract } from '@/features/contracts/queries/get-contracts.server';
 import { getContractAnalysis } from '@/features/contracts/queries/get-contract-analysis.server';
 import ContractChartsView from '@/features/contracts/components/ContractChartsView';
 import DeleteContractButton from '@/features/contracts/components/DeleteContractButton';
+import ContractRateTable from '@/features/contracts/components/contract-rate-table';
 
 interface ContractPageProps {
   params: Promise<{
@@ -76,49 +77,7 @@ export default async function ContractPage({ params }: ContractPageProps) {
       </div>
 
       {/* 3. CPT RATE COMPARISON TABLE */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm transition-colors duration-200">
-        <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">CPT Rate Comparison</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400">
-                <th className="py-3 px-2 font-medium">CPT Code</th>
-                <th className="py-3 px-2 font-medium">Description</th>
-                <th className="py-3 px-2 font-medium">Market Rate</th>
-                <th className="py-3 px-2 font-medium">Contract Rate / Formula</th>
-                <th className="py-3 px-2 font-medium">Impact ($)</th>
-                <th className="py-3 px-2 font-medium text-right">Variance %</th>
-              </tr>
-            </thead>
-            <tbody className="text-gray-800 dark:text-gray-300">
-              {analysis.slice(0, 10).map((row, idx) => (
-                <tr key={idx} className="border-b border-gray-100 dark:border-gray-700/50 last:border-0">
-                  <td className="py-3 px-2">{row.cpt_code}</td>
-                  <td className="py-3 px-2 truncate max-w-[200px]">{row.description || 'N/A'}</td>
-                  <td className="py-3 px-2">${row.market_rate ? Number(row.market_rate).toFixed(2) : '--'}</td>
-                  <td className="py-3 px-2 font-medium">
-                    {row.rate_formula 
-                      ? <span className="text-blue-600 dark:text-blue-400 italic">{row.rate_formula}</span>
-                      : `$${Number(row.contract_rate).toFixed(2)}`
-                    }
-                  </td>
-                  <td className={`py-3 px-2 ${row.variance_amount && Number(row.variance_amount) < 0 ? 'text-red-500' : 'text-green-500'}`}>
-                    {row.variance_amount ? `$${Number(row.variance_amount).toFixed(2)}` : '--'}
-                  </td>
-                  <td className={`py-3 px-2 text-right font-medium ${row.variance_percent && Number(row.variance_percent) < 0 ? 'text-red-500' : 'text-green-500'}`}>
-                    {row.variance_percent ? `${Number(row.variance_percent).toFixed(1)}%` : '--'}
-                  </td>
-                </tr>
-              ))}
-              {analysis.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="py-8 text-center text-gray-500 italic">No rate data found for this contract.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <ContractRateTable analysis={analysis} />
 
       {/* 4. NEGOTIATION OPPORTUNITIES */}
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm transition-colors duration-200">
@@ -137,7 +96,10 @@ export default async function ContractPage({ params }: ContractPageProps) {
       </div>
 
       {/* 5. RATE ANALYSIS (Interactive Client Component) */}
-      <ContractChartsView contract={contract} />
+      <ContractChartsView 
+        contract={contract} 
+        availableCpts={Array.from(new Set(analysis.map(a => a.cpt_code)))} 
+      />
 
     </div>
   );

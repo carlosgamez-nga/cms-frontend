@@ -8,6 +8,7 @@ export interface DashboardSummary {
   active_contracts: number;
   total_cpt_codes: number;
   expiring_soon: number;
+  missing_rate_data: number;
   pending_negotiations: number;
   avg_rate_vs_market: number;
   high_risk_contracts: number;
